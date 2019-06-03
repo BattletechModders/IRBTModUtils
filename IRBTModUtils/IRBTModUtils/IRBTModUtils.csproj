@@ -33,6 +33,12 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\..\Volumes\SourceCode\Steam\steamapps\common\BATTLETECH\BattleTech.app\Contents\Resources\Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\..\..\Volumes\SourceCode\Steam\steamapps\common\BATTLETECH\BattleTech.app\Contents\Resources\Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\..\..\..\..\..\Volumes\SourceCode\Steam\steamapps\common\BATTLETECH\BattleTech.app\Contents\Resources\Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -54,7 +60,15 @@
     <Compile Include="Helper\HostilityHelper.cs" />
     <Compile Include="Helper\MathHelper.cs" />
     <Compile Include="Helper\PilotSkillHelper.cs" />
-    <Compile Include="Utils\IntraModLogger.cs" />
+    <Compile Include="Logging\IntraModLogger.cs" />
+    <Compile Include="Helper\GeometryUtils.cs" />
+    <Compile Include="Math\HexUtils.cs" />
+    <Compile Include="Math\GeometryUtils.cs" />
+    <Compile Include="Sorter\Sorters.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Math\" />
+    <Folder Include="Sorter\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
