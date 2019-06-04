@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -31,13 +31,13 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\..\Volumes\SourceCode\Steam\steamapps\common\BATTLETECH\BattleTech.app\Contents\Resources\Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\..\Volumes\SourceCode\Steam\steamapps\common\BATTLETECH\BattleTech.app\Contents\Resources\Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\..\..\Volumes\SourceCode\Steam\steamapps\common\BATTLETECH\BattleTech.app\Contents\Resources\Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -56,17 +56,14 @@
     <Compile Include="Redzen\Xoshiro256StarStarRandom.cs" />
     <Compile Include="Redzen\Xoshiro256StarStarRandomBuilder.cs" />
     <Compile Include="Redzen\ZigguratGaussian.cs" />
-    <Compile Include="Helper\CombatantHelper.cs" />
-    <Compile Include="Helper\HostilityHelper.cs" />
+    <Compile Include="Helper\CombatantUtils.cs" />
+    <Compile Include="Helper\HostilityUtils.cs" />
     <Compile Include="Helper\SkillUtils.cs" />
     <Compile Include="Logging\IntraModLogger.cs" />
     <Compile Include="Math\HexUtils.cs" />
     <Compile Include="Math\GeometryUtils.cs" />
     <Compile Include="Sorter\Sorters.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Math\" />
-    <Folder Include="Sorter\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

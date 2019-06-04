@@ -2,7 +2,7 @@
 
 namespace us.frostraptor.modUtils {
 
-    public static class CombatantHelper {
+    public static class CombatantUtils {
 
         public static string Label(ICombatant combatant) {
             string label = "Unknown";
