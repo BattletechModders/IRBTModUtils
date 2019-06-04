@@ -2,7 +2,7 @@
 
 // Shamelessly stolen from https://github.com/colgreen/Redzen/blob/master/Redzen/Random/RandomSourceBase.cs, 
 //  thanks to the MIT License. See http://heliosphan.org/zigguratalgorithm/zigguratalgorithm.html for details.
-namespace LowVisibility.Redzen {
+namespace us.frostraptor.modUtils.Redzen {
     public abstract class RandomSourceBase {
         // Constants.
         const double INCR_DOUBLE = 1.0 / (1UL << 53);

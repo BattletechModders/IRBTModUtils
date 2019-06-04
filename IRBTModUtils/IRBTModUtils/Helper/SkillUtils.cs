@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace us.frostraptor.modUtils {
 
-    class SkillUtils {
+    public class SkillUtils {
 
         private const string TOOLTIP_GREEN = "#00FF00";
         private const string TOOLTIP_RED = "#FF0000";

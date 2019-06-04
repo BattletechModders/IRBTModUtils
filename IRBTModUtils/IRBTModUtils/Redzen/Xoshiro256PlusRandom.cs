@@ -31,11 +31,11 @@
 // a 64-bit seed, we suggest to seed a splitmix64 generator and use its
 // output to fill s. 
 
-using static LowVisibility.Redzen.BitwiseUtils;
+using static us.frostraptor.modUtils.Redzen.BitwiseUtils;
 
 // Shamelessly stolen from https://github.com/colgreen/Redzen/blob/master/Redzen/Random/Xoshiro256PlusRandom.cs, 
 //  thanks to the MIT License. See http://heliosphan.org/zigguratalgorithm/zigguratalgorithm.html for details.
-namespace LowVisibility.Redzen {
+namespace us.frostraptor.modUtils.Redzen {
     /// <summary>
     /// Xoshiro256+ (xor, shift, rotate) pseudo random number generator (PRNG).
     /// </summary>

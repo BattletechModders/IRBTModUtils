@@ -1,5 +1,5 @@
 ﻿
-namespace LowVisibility.Redzen {
+namespace us.frostraptor.modUtils.Redzen {
     /// <summary>
     /// A builder of Xoshiro256PlusRandom instances.
     /// </summary>

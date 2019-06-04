@@ -1,7 +1,10 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRBTModUtils", "IRBTModUtils\IRBTModUtils.csproj", "{8D8489AF-15CB-44E9-879A-97A2131F3B03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRBTModUtilsTests", "IRBTModUtilsTests\IRBTModUtilsTests.csproj", "{5BC45574-DCDB-4B1F-8C6B-DB891086EE03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,5 +16,15 @@ Global
 		{8D8489AF-15CB-44E9-879A-97A2131F3B03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D8489AF-15CB-44E9-879A-97A2131F3B03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D8489AF-15CB-44E9-879A-97A2131F3B03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BC45574-DCDB-4B1F-8C6B-DB891086EE03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BC45574-DCDB-4B1F-8C6B-DB891086EE03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BC45574-DCDB-4B1F-8C6B-DB891086EE03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BC45574-DCDB-4B1F-8C6B-DB891086EE03}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D19A8A20-D1E1-4A23-9635-7CACFF1D6816}
 	EndGlobalSection
 EndGlobal

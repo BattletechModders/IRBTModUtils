@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Threading;
 
-namespace LowVisibility.Redzen {
+namespace us.frostraptor.modUtils.Redzen {
     /// <summary>
     /// Default implementation of IRandomSeedSource.
     /// A source of seed values for use by pseudo-random number generators (PRNGs).

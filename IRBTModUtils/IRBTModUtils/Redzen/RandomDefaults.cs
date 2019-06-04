@@ -2,7 +2,7 @@
 
 // Shamelessly stolen from https://github.com/colgreen/Redzen/blob/master/Redzen/Random/RandomDefaults.cs, 
 //  thanks to the MIT License. See http://heliosphan.org/zigguratalgorithm/zigguratalgorithm.html for details.
-namespace LowVisibility.Redzen {
+namespace us.frostraptor.modUtils.Redzen {
     public static class RandomDefaults {
         /// <summary>
         /// A static default IRandomSeedSource instance for use anywhere within the current process.

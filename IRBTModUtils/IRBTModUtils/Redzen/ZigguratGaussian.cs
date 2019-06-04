@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 // Shamelessly stolen from https://github.com/colgreen/Redzen/blob/master/Redzen/Numerics/Distributions/Double/ZigguratGaussian.cs, 
 //  thanks to the MIT License. See http://heliosphan.org/zigguratalgorithm/zigguratalgorithm.html for details.
-namespace LowVisibility.Redzen {
+namespace us.frostraptor.modUtils.Redzen {
     // ENHANCEMENT: Further performance improvement can be obtained by using a less precise method
     // whereby we represent the distribution curve as a piecewise linear curve, i.e. approximate
     // the curve using stacked trapezoids instead of stacked rectangles, and skip handling of the

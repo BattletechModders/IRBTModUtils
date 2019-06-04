@@ -21,7 +21,7 @@
 // computations) or xorshift1024* (for massively parallel computations)
 // generator.
 
-namespace LowVisibility.Redzen {
+namespace us.frostraptor.modUtils.Redzen {
     public static class Splitmix64Rng {
         /// <summary>
         /// Splitmix64 RNG.

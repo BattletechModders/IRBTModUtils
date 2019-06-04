@@ -28,9 +28,9 @@
 
 using System.Runtime.CompilerServices;
 
-using static LowVisibility.Redzen.BitwiseUtils;
+using static us.frostraptor.modUtils.Redzen.BitwiseUtils;
 
-namespace LowVisibility.Redzen {
+namespace us.frostraptor.modUtils.Redzen {
     /// <summary>
     /// Xoshiro256** (xor, shift, rotate) pseudo random number generator (PRNG).
     /// </summary>
