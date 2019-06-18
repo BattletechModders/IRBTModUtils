@@ -6,11 +6,11 @@ namespace us.frostraptor.modUtils.logging {
     // Logs to a static file inside the mod class 
     public class IntraModLogger {
 
-        private static StreamWriter LogStream;
-        private static string LogFile;
+        private StreamWriter LogStream;
+        private readonly string LogFile;
 
-        private static bool IsDebug;
-        private static bool IsTrace;
+        private readonly bool IsDebug;
+        private readonly bool IsTrace;
 
         public IntraModLogger(string modDir, string logName="mod", bool isDebug=false, bool isTrace=false) {
             if (LogFile == null) {
