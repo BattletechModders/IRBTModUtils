@@ -104,7 +104,7 @@ namespace us.frostraptor.modUtils {
             { 13, 8 }
         };
 
-        private static int NormalizeSkill(int rawValue) {
+        public static int NormalizeSkill(int rawValue) {
             int normalizedVal = rawValue;
             if (rawValue >= 11 && rawValue <= 14) {
                 // 11, 12, 13, 14 normalizes to 11
