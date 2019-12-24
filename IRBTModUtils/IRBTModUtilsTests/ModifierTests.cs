@@ -116,8 +116,34 @@ namespace HexUtilsModifiersTests {
             
 
         }
+        
+        [Test]
+        public void HarkonnenMod() {
+            int initialMod = 0, finalMod = 5, hexSteps = 2;
+            int mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 0f);
+            Assert.AreEqual(0, mod);
 
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 60f);
+            Assert.AreEqual(1, mod);
 
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 120f);
+            Assert.AreEqual(2, mod);
+
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 180f);
+            Assert.AreEqual(3, mod);
+
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 240f);
+            Assert.AreEqual(4, mod);
+
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 300f);
+            Assert.AreEqual(5, mod);
+
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 360f);
+            Assert.AreEqual(5, mod);
+
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 500f);
+            Assert.AreEqual(5, mod);
+        }
 
     }
 }
