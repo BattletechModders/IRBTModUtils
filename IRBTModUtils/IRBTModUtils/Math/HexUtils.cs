@@ -32,24 +32,24 @@ namespace us.frostraptor.modUtils.math {
 
             if (steps != 0 && !roundUp) { steps = steps - 1; }
 
-            Console.WriteLine($"For range:{range} hexes:{hexes} step:{step} = steps:{steps}");
+            //Console.WriteLine($"For range:{range} hexes:{hexes} step:{step} = steps:{steps}");
             return steps;
         }
 
         public static int DecayingModifier(int start, int end, int step, float range) {
             int steps = CountSteps(range, step, false);
-            //int delta = Math.Sign(start) == Math.Sign(end) ?
-                //Math.Abs(Math.Abs(start) - Math.Abs(end)) : 
-                //Math.Abs(start) + Math.Abs(end);
 
-            int stepMod = start < end ? steps : steps * -1;
-            int mod = start + stepMod;
+            if (start < end) {
+                // Increasing range
+                int mod = start + steps;
+                return mod > end ? end : mod;
+            } else {
+                // Decreasing range
+                int mod = start + (steps * -1);
+                return mod < end ? end : mod;
 
-            if (Math.Abs(mod) > Math.Abs(end)) {
-                mod = end;
             }
 
-            return mod;
         }
 
     }
