@@ -94,29 +94,63 @@ namespace HexUtilsModifiersTests {
 
         }
 
+        // === Modiifers used by LA in RT ===
         [Test]
         public void LAMod() {
-            // Mods written by LA
+            int initialMod = 0, finalMod = -1, hexSteps = 10;
 
             // No range, no modifier
-            int mod = HexUtils.DecayingModifier(0, -1, 10, 0f);
+            int mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 0f);
             Assert.AreEqual(0, mod);
 
             // Not full step, no modifier
-            mod = HexUtils.DecayingModifier(0, -1, 10, 200f);
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 200f);
             Assert.AreEqual(0, mod);
 
             // One full step, modifier
-            mod = HexUtils.DecayingModifier(0, -1, 10, 300f);
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 300f);
             Assert.AreEqual(-1, mod);
 
             // Two steps, same modifier
-            mod = HexUtils.DecayingModifier(0, -1, 10, 600f);
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 600f);
             Assert.AreEqual(-1, mod);
-            
-
         }
-        
+
+        [Test]
+        public void LAMod2() {
+            int initialMod = -4, finalMod = 0, hexSteps = 4;
+
+            // No range, no modifier
+            int mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 0f);
+            Assert.AreEqual(-4, mod);
+
+            // Not full step, no modifier
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 110f);
+            Assert.AreEqual(-4, mod);
+
+            // One step
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 125f);
+            Assert.AreEqual(-3, mod);
+
+            // Two steps
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 245f);
+            Assert.AreEqual(-2, mod);
+
+            // Three steps
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 365f);
+            Assert.AreEqual(-1, mod);
+
+            // Four steps, same modifier
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 485f);
+            Assert.AreEqual(-0, mod);
+
+            // Five steps, same modifier
+            mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 610f);
+            Assert.AreEqual(0, mod);
+        }
+
+
+        // === Modifiers used by Harkonnen in his NAOP mod ===
         [Test]
         public void HarkonnenMod() {
             int initialMod = 0, finalMod = 5, hexSteps = 2;
