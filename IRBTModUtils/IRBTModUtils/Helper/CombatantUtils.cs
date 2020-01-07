@@ -1,7 +1,6 @@
 ﻿using BattleTech;
 
 namespace us.frostraptor.modUtils {
-
     public static class CombatantUtils {
 
         public static string Label(ICombatant combatant) {
