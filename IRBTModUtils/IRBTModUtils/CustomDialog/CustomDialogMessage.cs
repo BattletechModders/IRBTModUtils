@@ -7,7 +7,7 @@ namespace us.frostraptor.modUtils.CustomDialog {
         public CustomDialogMessage(AbstractActor dialogueSource, DialogueContent dialogueContent, float showDuration = 0f) : base() {
             this.dialogueSource = dialogueSource;
             this.dialogueContent = dialogueContent;
-            this.showDuration = showDuration == 0f ? this.showDuration : this.dialogueContent.GetDialogueTime();
+            this.showDuration = showDuration != 0f ? showDuration : dialogueContent.GetDialogueTime();
         }
 
         public override MessageCenterMessageType MessageType {

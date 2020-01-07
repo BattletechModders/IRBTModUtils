@@ -10,17 +10,14 @@ namespace us.frostraptor.modUtils.CustomDialog {
     public class CustomDialogSequence : MultiSequence {
 
         public CustomDialogSequence(CombatGameState Combat, CombatHUDDialogSideStack sideStack, 
-            DialogueContent content, AbstractActor dialogueSource, float showDuration, bool isCancelable = true) : base(Combat) {
+            bool isCancelable = true) : base(Combat) {
             this.isCancelable = isCancelable;
             this.sideStack = sideStack;
             this.state = DialogState.None;
-            this.dialogueSource = dialogueSource;
-            this.content = content;
-            this.showDuration = showDuration;
         }
 
         public void SetState(DialogState newState) {
-            Mod.Log.Debug($"CDS::SetState - {CombatantUtils.Label(this.dialogueSource)} state changing to: {newState}");
+            Mod.Log.Debug($"CDS::SetState - {CombatantUtils.Label(this.currentMessage.DialogueSource)} state changing to: {newState}");
             if (this.state == newState) {
                 return;
             }
@@ -35,18 +32,10 @@ namespace us.frostraptor.modUtils.CustomDialog {
 
         public override void OnUpdate() {
             base.OnUpdate();
-            if (this.state == DialogState.None && !ModState.IsDialogueSequencePlaying) {
-                this.SetState(DialogState.Talking);
-                ModState.IsDialogueSequencePlaying = true;
-            }
         }
 
         private void PublishDialogMessages() {
             AudioEventManager.DialogSequencePlaying = true;
-            if (this.dialogueSource == null || this.content.words.Length < 1) {
-                this.SetState(DialogState.Finished);
-                return;
-            }
             this.PlayMessage();
         }
 
@@ -58,15 +47,15 @@ namespace us.frostraptor.modUtils.CustomDialog {
         }
 
         private void Play() {
-            Mod.Log.Debug($"CDS::Play - invoked {CombatantUtils.Label(this.dialogueSource)}");
+            Mod.Log.Debug($"CDS::Play - invoked {CombatantUtils.Label(this.currentMessage.DialogueSource)}");
            
             this.sideStack.PanelFrame.gameObject.SetActive(true);
-            if (this.dialogueSource.team.IsLocalPlayer) {
+            if (this.currentMessage.DialogueSource.team.IsLocalPlayer) {
                 Mod.Log.Debug($"  Displaying pilot portrait");
-                this.sideStack.ShowPortrait(this.dialogueSource.GetPilot().GetPortraitSpriteThumb());
+                this.sideStack.ShowPortrait(this.currentMessage.DialogueSource.GetPilot().GetPortraitSpriteThumb());
             } else {
                 Mod.Log.Debug($"  Displaying castDef portrait");
-                this.sideStack.ShowPortrait(this.content.CastDef.defaultEmotePortrait.LoadPortrait(false));
+                this.sideStack.ShowPortrait(this.currentMessage.DialogueContent.CastDef.defaultEmotePortrait.LoadPortrait(false));
             }
 
             try {
@@ -74,9 +63,9 @@ namespace us.frostraptor.modUtils.CustomDialog {
                 if (speakerNameFieldT == null) { Mod.Log.Warn("COULD NOT FIND speakerNameFieldT!"); }
                 speakerNameFieldT.gameObject.SetActive(true);
 
-                Mod.Log.Debug($" Setting SpeakerName to: '{content.SpeakerName}' with callsign: '{content.CastDef.callsign}'");
+                Mod.Log.Debug($" Setting SpeakerName to: '{this.currentMessage.DialogueContent.SpeakerName}' with callsign: '{this.currentMessage.DialogueContent.CastDef.callsign}'");
                 LocalizableText speakerNameLT = speakerNameFieldT.GetComponentInChildren<LocalizableText>();
-                speakerNameLT.SetText(content.SpeakerName);
+                speakerNameLT.SetText(this.currentMessage.DialogueContent.SpeakerName);
                 speakerNameLT.gameObject.SetActive(true);
                 speakerNameLT.alignment = TMPro.TextAlignmentOptions.Bottom;
 
@@ -86,10 +75,10 @@ namespace us.frostraptor.modUtils.CustomDialog {
             }
 
             this.activeDialog = this.sideStack.GetNextItem();
-            this.activeDialog.Init(this.showDuration, true, new Action(this.AfterDialogShow), new Action(this.AfterDialogHide));
+            this.activeDialog.Init(this.currentMessage.ShowDuration, true, new Action(this.AfterDialogShow), new Action(this.AfterDialogHide));
 
-            Mod.Log.Debug($"CDS - Showing dialog: words:{this.content.words} color:{this.content.wordsColor} speakerName:{this.content.SpeakerName} timeout: {this.showDuration}");
-            this.activeDialog.Show(this.content.words, this.content.wordsColor, this.content.SpeakerName);
+            Mod.Log.Debug($"CDS - Showing dialog: words: '{this.currentMessage.DialogueContent.words}' color: '{this.currentMessage.DialogueContent.wordsColor}' speakerName: '{this.currentMessage.DialogueContent.SpeakerName}' timeout: {this.currentMessage.ShowDuration}");
+            this.activeDialog.Show(this.currentMessage.DialogueContent.words, this.currentMessage.DialogueContent.wordsColor, this.currentMessage.DialogueContent.SpeakerName);
             Mod.Log.Trace("CDS::Play - DONE");
         }
 
@@ -106,7 +95,12 @@ namespace us.frostraptor.modUtils.CustomDialog {
             if (speakerNameFieldT == null) { Mod.Log.Warn("COULD NOT FIND speakerNameFieldT!"); }
             speakerNameFieldT.gameObject.SetActive(false);
 
-            ModState.IsDialogueSequencePlaying = false;
+            if (ModState.DialogueQueue.Count > 0) {
+                Mod.Log.Trace("  DialogQueue has additional messages, reading another instead of exiting.");
+                this.currentMessage = (CustomDialogMessage)ModState.DialogueQueue.Dequeue();
+                this.SetState(DialogState.Talking);
+                return;
+            }
         }
 
         public void UserRequestHide() {
@@ -115,20 +109,22 @@ namespace us.frostraptor.modUtils.CustomDialog {
 
         public override void OnAdded() {
             base.OnAdded();
-            if (!ModState.IsDialogueSequencePlaying) {
-                this.SetState(DialogState.Talking);
-                ModState.IsDialogueSequencePlaying = true;
-            }
+            this.currentMessage = (CustomDialogMessage)ModState.DialogueQueue.Dequeue();
+            this.SetState(DialogState.Talking);
         }
 
         public override void OnComplete() {
+            Mod.Log.Trace("CDS:OC - entered.");
+
             base.OnComplete();
             AudioEventManager.DialogSequencePlaying = false;
-            this.SendCompleteMessage();
+            //this.SendCompleteMessage();
+            ModState.IsDialogStackActive = false;
+            Mod.Log.Trace("CDS:OC - Setting IsDialogStackActive = false");
         }
 
         public void SendCompleteMessage() {
-            base.Combat.MessageCenter.PublishMessage(new DialogComplete(this.dialogueSource.GUID));
+            base.Combat.MessageCenter.PublishMessage(new DialogComplete(this.currentMessage.DialogueSource.GUID));
         }
 
         public void SetIsCancelable(bool isCancelable) {
@@ -167,7 +163,7 @@ namespace us.frostraptor.modUtils.CustomDialog {
         public override void OnResume() {
             base.OnResume();
             if (this.activeDialog != null) {
-                if (this.content != null) {
+                if (this.currentMessage.DialogueContent != null) {
                     this.Play();
                     return;
                 }
@@ -180,7 +176,7 @@ namespace us.frostraptor.modUtils.CustomDialog {
             base.OnCanceled();
             this.UserRequestHide();
             this.pendingMessages.Clear();
-            this.content = null;
+            this.currentMessage = null;
             this.SetState(DialogState.Finished);
             this.SendCompleteMessage();
         }
@@ -189,16 +185,13 @@ namespace us.frostraptor.modUtils.CustomDialog {
 
         private DialogState state;
 
-        private readonly AbstractActor dialogueSource;
-
         private readonly CombatHUDDialogSideStack sideStack;
 
         public List<DialogueContent> pendingMessages = new List<DialogueContent>();
 
-        private DialogueContent content;
-
         private CombatHUDDialogItem activeDialog;
 
-        private readonly float showDuration;
+        private CustomDialogMessage currentMessage;
+
     }
 }

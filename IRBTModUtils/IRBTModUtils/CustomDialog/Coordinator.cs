@@ -26,11 +26,16 @@ namespace us.frostraptor.modUtils.CustomDialog {
             CustomDialogMessage msg = (CustomDialogMessage)message;
             if (msg == null) { return; }
 
-            MessageCenter.PublishMessage(
-                new AddSequenceToStackMessage(
-                    new CustomDialogSequence(Combat, SideStack, msg.DialogueContent, msg.DialogueSource, msg.ShowDuration, false)
-                    )
-                );
+            ModState.DialogueQueue.Enqueue(msg);
+            if (!ModState.IsDialogStackActive) {
+                Mod.Log.Debug("No existing dialog sequence, publishing a new one.");
+                ModState.IsDialogStackActive = true;
+                MessageCenter.PublishMessage(
+                    new AddParallelSequenceToStackMessage(new CustomDialogSequence(Combat, SideStack, false))
+                    );
+            } else {
+                Mod.Log.Debug("Existing dialog sequence exists, skipping creation.");
+            }
         }
 
         public static void OnCombatHUDInit(CombatGameState combat, CombatHUD combatHUD) {
