@@ -52,6 +52,20 @@ namespace us.frostraptor.modUtils.math {
 
         }
 
+        // Count the total distance a range will extend
+        public static int HexesInRange(int start, int end, int step) {
+            
+            int range = 0;
+            if (start < 0 && end < 0 || start > 0 && end > 0) {
+                range = start - end;
+            } else if (start > 0) {
+                range = start + Math.Abs(end);
+            } else {
+                range = Math.Abs(start) + end;
+            }
+            range = Math.Abs(range);
+            return range * step;
+        }
     }
 
 }

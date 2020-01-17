@@ -6,6 +6,33 @@ using us.frostraptor.modUtils.math;
 
 namespace HexUtilsCountingTests {
 
+
+    [TestFixture]
+    public class HexUtilsTexts {
+
+        [Test]
+        public void MaxHexes() {
+            // starts at 2, goes to 3 at 3 hexes, ends at 4 at 6 hexes
+            Assert.AreEqual(6, HexUtils.HexesInRange(2, 4, 3));
+
+            // starts at 0, goes to 2 at 6 hexes, ends at 4 at 12 hexes
+            Assert.AreEqual(12, HexUtils.HexesInRange(0, 4, 3));
+
+            // starts at -4, goes to -2 at 8 hexes, ends at -1 at 12 hexes
+            Assert.AreEqual(12, HexUtils.HexesInRange(-4, -1, 4));
+
+            // starts at -6, goes to -3 at 12 hexes, ends at 0 at 24 hexes
+            Assert.AreEqual(24, HexUtils.HexesInRange(-6, 0, 4));
+
+            // starts at 2, goes to -0 at 8 hexes, ends at -2 at 16 hexes
+            Assert.AreEqual(16, HexUtils.HexesInRange(2, -2, 4));
+
+            // starts at -2, goes to 0 at 10 hexes, ends at 2 at 20 hexes
+            Assert.AreEqual(20, HexUtils.HexesInRange(-2, 2, 5));
+
+        }
+    }
+
     [TestFixture]
     public class DivisionVsIterationTest {
 
