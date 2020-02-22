@@ -5,8 +5,8 @@ using System;
 
 namespace us.frostraptor.modUtils.CustomDialog {
 
-    // Register listeners for our events, using the CombatHUD hook
-    [HarmonyPatch(typeof(CombatHUD), "SubscribeToMessages")]
+   // Register listeners for our events, using the CombatHUD hook
+   [HarmonyPatch(typeof(CombatHUD), "SubscribeToMessages")]
     public static class CombatHUD_SubscribeToMessages {
         public static void Postfix(CombatHUD __instance, bool shouldAdd) {
             if (__instance != null) {
@@ -18,7 +18,7 @@ namespace us.frostraptor.modUtils.CustomDialog {
 
     // Initialize shared elements (CombatGameState, etc)
     [HarmonyPatch(typeof(CombatHUD), "Init")]
-    [HarmonyPatch(new Type[] {  typeof(CombatGameState) })]
+    [HarmonyPatch(new Type[] { typeof(CombatGameState) })]
     public static class CombatHUD_Init {
         public static void Postfix(CombatHUD __instance, CombatGameState Combat) {
             Coordinator.OnCombatHUDInit(Combat, __instance);

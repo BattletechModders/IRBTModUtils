@@ -2,6 +2,7 @@
 using BattleTech.UI;
 using HBS.Data;
 using IRBTModUtils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace us.frostraptor.modUtils.CustomDialog {
         private static CombatGameState Combat;
         private static MessageCenter MessageCenter;
         private static CombatHUDDialogSideStack SideStack;
-        private static List<string> CallSigns;
+        public static List<string> CallSigns;
 
         public static bool CombatIsActive {
             get { return Coordinator.Combat != null && Coordinator.SideStack != null; }
@@ -48,9 +49,15 @@ namespace us.frostraptor.modUtils.CustomDialog {
             if (Coordinator.CallSigns == null) {
                 string filePath = Path.Combine(Mod.ModDir, Mod.Config.Dialogue.CallsignsPath);
                 Mod.Log.Debug($"Reading files from {filePath}");
-                Coordinator.CallSigns = File.ReadAllLines(filePath).ToList();
+                try {
+                    Coordinator.CallSigns = File.ReadAllLines(filePath).ToList();
+                } catch (Exception e) {
+                    Mod.Log.Error("Failed to read callsigns from BT directory!");
+                    Mod.Log.Error(e);
+                    Coordinator.CallSigns = new List<string> { "Alpha", "Beta", "Gamma" };
+                }
+                Mod.Log.Debug($"Callsign count is: {Coordinator.CallSigns.Count}");
             }
-            Mod.Log.Debug($"Callsign count is: {Coordinator.CallSigns.Count}");
 
             Mod.Log.Trace("Coordinator::OCHUDI - exiting.");
         }

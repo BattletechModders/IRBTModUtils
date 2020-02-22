@@ -30,7 +30,7 @@
                     "sprites/Portraits/guiTxrPort_GenericMW_marik_utr.png",
                     "sprites/Portraits/guiTxrPort_GenericMW_steiner_utr.png",
             };
-            public string CallsignsPath = "../../BattleTech_Data/StreamingAssets/data/nameLists/name_callsign.txt";
+            public string CallsignsPath = "BattleTech_Data/StreamingAssets/data/nameLists/name_callsign.txt";
         }
         public DialogueOptions Dialogue = new DialogueOptions();
 

@@ -1,8 +1,12 @@
 ﻿using Harmony;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using us.frostraptor.modUtils.CustomDialog;
 using us.frostraptor.modUtils.logging;
 
 namespace IRBTModUtils {
@@ -42,6 +46,23 @@ namespace IRBTModUtils {
                 Log.Info($"ERROR reading settings file! Error was: {settingsE}");
             } else {
                 Log.Info($"INFO: No errors reading settings file.");
+            }
+
+            // Try to determine the battletech directory
+            string fileName = Process.GetCurrentProcess().MainModule.FileName;
+            string btDir = Path.GetDirectoryName(fileName);
+            Log.Debug($"BT File is: {fileName} with btDir: {btDir}");
+            if (Coordinator.CallSigns == null) {
+                string filePath = Path.Combine(btDir, Mod.Config.Dialogue.CallsignsPath);
+                Mod.Log.Debug($"Reading files from {filePath}");
+                try {
+                    Coordinator.CallSigns = File.ReadAllLines(filePath).ToList();
+                } catch (Exception e) {
+                    Mod.Log.Error("Failed to read callsigns from BT directory!");
+                    Mod.Log.Error(e);
+                    Coordinator.CallSigns = new List<string> { "Alpha", "Beta", "Gamma" };
+                }
+                Mod.Log.Debug($"Callsign count is: {Coordinator.CallSigns.Count}");
             }
 
             var harmony = HarmonyInstance.Create(HarmonyPackage);
