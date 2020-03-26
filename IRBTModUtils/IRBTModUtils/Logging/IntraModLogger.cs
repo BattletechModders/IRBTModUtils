@@ -61,7 +61,6 @@ namespace us.frostraptor.modUtils.logging
         public void Info(string message)
         {
             Log(message);
-            HBSLogger.LogAtLevel(LogLevel.Log, this.LogLabel + message);
         }
 
         public void Warn(string message)
