@@ -1,46 +1,105 @@
-﻿using System;
+﻿using HBS.Logging;
+using System;
 using System.IO;
 
-namespace us.frostraptor.modUtils.logging {
+namespace us.frostraptor.modUtils.logging
+{
 
     // Logs to a static file inside the mod class 
-    public class IntraModLogger {
+    public class IntraModLogger
+    {
 
         private StreamWriter LogStream;
         private readonly string LogFile;
+        private readonly string LogLabel;
+        private readonly ILog HBSLogger;
 
         private readonly bool IsDebug;
         private readonly bool IsTrace;
 
-        public IntraModLogger(string modDir, string logName="mod", bool isDebug=false, bool isTrace=false) {
-            if (LogFile == null) {
-                LogFile = Path.Combine(modDir, $"{logName}.log");
+        public IntraModLogger(string modDir, string logFilename = "mod", bool isDebug = false, bool isTrace = false) : this (modDir, logFilename, "mod", isDebug, isTrace)
+        {
+        }
+
+        public IntraModLogger(string modDir, string logFilename = "mod", string logLabel = "mod", bool isDebug = false, bool isTrace = false)
+        {
+            if (LogFile == null)
+            {
+                LogFile = Path.Combine(modDir, $"{logFilename}.log");
             }
-            if (File.Exists(LogFile)) {
+
+            if (File.Exists(LogFile))
+            {
                 File.Delete(LogFile);
             }
 
             LogStream = File.AppendText(LogFile);
+
+            LogLabel = "[" + logLabel + "]";
             IsDebug = isDebug;
             IsTrace = isTrace;
 
+            HBSLogger = HBS.Logging.Logger.GetLogger(logLabel);
         }
 
-        public void Trace(string message) { if (IsTrace) { Log(message); } }
+        public void Trace(string message)
+        {
+            if (IsTrace)
+            {
+                Log(message);
+            }
+        }
 
-        public void Debug(string message) { if (IsDebug) { Log(message); } }
+        public void Debug(string message)
+        {
+            if (IsDebug)
+            {
+                Log(message);
+            }
+        }
 
-        public void Info(string message) { Log(message); }
+        public void Info(string message)
+        {
+            Log(message);
+            HBSLogger.LogAtLevel(LogLevel.Log, this.LogLabel + message);
+        }
 
-        public void Warn(string message) { Log("[WARNING]" + message); }
+        public void Warn(string message)
+        {
+            Log("WARNING:" + message);
+            HBSLogger.LogAtLevel(LogLevel.Warning, this.LogLabel + message);
+        }
 
-        public void Error(string message) { Log("[ERROR]" + message); }
-        public void Error(Exception e) { Log("[ERROR]" + e.Message); }
+        public void Error(string message)
+        {
+            Log("ERROR:" + message);
+            HBSLogger.LogAtLevel(LogLevel.Error, this.LogLabel + message);
+        }
 
-        private void Log(string message) {
+        public void Error(Exception e)
+        {
+            Log("ERROR:" + e.Message);
+            HBSLogger.LogAtLevel(LogLevel.Error, this.LogLabel + e.Message);
+        }
+
+        public void Error(string message, Exception e)
+        {
+            Log("ERROR:" + message);
+            Log("ERROR:" + e.Message);
+
+            HBSLogger.LogAtLevel(LogLevel.Error, this.LogLabel + message, e);
+        }
+
+        private void Log(string message)
+        {
             string now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
             LogStream.WriteLine($"{now} - {message}");
             LogStream.Flush();
+        }
+
+        private void LogHBS(string message)
+        {
+            
         }
 
     }
