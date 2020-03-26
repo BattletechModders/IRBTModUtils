@@ -35,7 +35,7 @@ namespace us.frostraptor.modUtils.logging
 
             LogStream = File.AppendText(LogFile);
 
-            LogLabel = "[" + logLabel + "]";
+            LogLabel = "<" + logLabel + ">";
             IsDebug = isDebug;
             IsTrace = isTrace;
 
