@@ -123,6 +123,55 @@ namespace us.frostraptor.modUtils.CustomDialog {
             return newCastDef;
         }
 
+        public static CastDef CreateCast(CombatGameState combat, string sourceGUID, Team team, string employerFactionName = "Support")
+        {
+            string castDefId = $"castDef_{sourceGUID}";
+            if (combat.DataManager.CastDefs.Exists(castDefId))
+            {
+                return combat.DataManager.CastDefs.Get(castDefId);
+            }
+
+            FactionValue actorFaction = team?.FactionValue;
+            bool factionExists = actorFaction.Name != "INVALID_UNSET" && actorFaction.Name != "NoFaction" &&
+                actorFaction.FactionDefID != null && actorFaction.FactionDefID.Length != 0 ? true : false;
+
+            if (factionExists)
+            {
+                Mod.Log.Debug($"Found factionDef for id:{actorFaction}");
+                string factionId = actorFaction?.FactionDefID;
+                FactionDef employerFactionDef = UnityGameInstance.Instance.Game.DataManager.Factions.Get(factionId);
+                if (employerFactionDef == null) { Mod.Log.Error($"Error finding FactionDef for faction with id '{factionId}'"); }
+                else { employerFactionName = employerFactionDef.Name.ToUpper(); }
+            }
+            else
+            {
+                Mod.Log.Debug($"FactionDefID does not exist for faction: {actorFaction}");
+            }
+
+            CastDef newCastDef = new CastDef
+            {
+                // Temp test data
+                FactionValue = actorFaction,
+                firstName = $"{employerFactionName} -",
+                showRank = false,
+                showCallsign = true,
+                showFirstName = true,
+                showLastName = false
+            };
+            // DisplayName order is first, callsign, lastname
+
+            newCastDef.id = castDefId;
+            string portraitPath = GetRandomPortraitPath();
+            newCastDef.defaultEmotePortrait.portraitAssetPath = portraitPath;
+            Mod.Log.Debug("Actor is not piloted, generating castDef.");
+            newCastDef.callsign = GetRandomCallsign();
+            Mod.Log.Debug($" Generated cast with callsign: {newCastDef.callsign} and DisplayName: {newCastDef.DisplayName()} using portrait: '{portraitPath}'");
+
+            ((DictionaryStore<CastDef>)UnityGameInstance.BattleTechGame.DataManager.CastDefs).Add(newCastDef.id, newCastDef);
+
+            return newCastDef;
+        }
+
         private static string GetRandomCallsign() {
             return Coordinator.CallSigns[UnityEngine.Random.Range(0, Coordinator.CallSigns.Count)];
         }

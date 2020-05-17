@@ -6,6 +6,14 @@ namespace us.frostraptor.modUtils.CustomDialog {
         // The message type to send dialog through
         public CustomDialogMessage(AbstractActor dialogueSource, DialogueContent dialogueContent, float showDuration = 0f) : base() {
             this.dialogueSource = dialogueSource;
+            this.dialogueSourceGUID = dialogueSource.GUID;
+            this.dialogueContent = dialogueContent;
+            this.showDuration = showDuration != 0f ? showDuration : dialogueContent.GetDialogueTime();
+        }
+
+        public CustomDialogMessage(string dialogueSourceGUID, DialogueContent dialogueContent, float showDuration = 0f) : base()
+        {
+            this.dialogueSourceGUID = dialogueSourceGUID;
             this.dialogueContent = dialogueContent;
             this.showDuration = showDuration != 0f ? showDuration : dialogueContent.GetDialogueTime();
         }
@@ -14,11 +22,18 @@ namespace us.frostraptor.modUtils.CustomDialog {
             get { return (MessageCenterMessageType)MessageTypes.OnCustomDialog; }
         }
 
-        public AbstractActor DialogueSource {
+        public string DialogueSourceGUID
+        {
+            get { return dialogueSourceGUID; }
+        }
+
+        public AbstractActor DialogueSource 
+        {
             get { return dialogueSource; }
         }
 
-        public DialogueContent DialogueContent {
+        public DialogueContent DialogueContent 
+        {
             get { return dialogueContent; }
         }
 
@@ -31,6 +46,8 @@ namespace us.frostraptor.modUtils.CustomDialog {
         public override string GenerateJSONTemplate() { return ""; }
 
         public override string ToJSON() { return ""; }
+
+        private string dialogueSourceGUID;
 
         private readonly AbstractActor dialogueSource;
 

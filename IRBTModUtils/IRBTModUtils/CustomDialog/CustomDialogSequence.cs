@@ -17,7 +17,7 @@ namespace us.frostraptor.modUtils.CustomDialog {
         }
 
         public void SetState(DialogState newState) {
-            Mod.Log.Debug($"CDS::SetState - {CombatantUtils.Label(this.currentMessage.DialogueSource)} state changing to: {newState}");
+            Mod.Log.Trace($"CDS::SetState - state changing to: {newState}");
             if (this.state == newState) {
                 return;
             }
@@ -47,10 +47,10 @@ namespace us.frostraptor.modUtils.CustomDialog {
         }
 
         private void Play() {
-            Mod.Log.Debug($"CDS::Play - invoked {CombatantUtils.Label(this.currentMessage.DialogueSource)}");
+            Mod.Log.Debug($"CDS::Play - invoked");
            
             this.sideStack.PanelFrame.gameObject.SetActive(true);
-            if (this.currentMessage.DialogueSource.team.IsLocalPlayer) {
+            if (this.currentMessage.DialogueSource != null && this.currentMessage.DialogueSource.team.IsLocalPlayer) {
                 Mod.Log.Debug($"  Displaying pilot portrait");
                 this.sideStack.ShowPortrait(this.currentMessage.DialogueSource.GetPilot().GetPortraitSpriteThumb());
             } else {
@@ -124,7 +124,7 @@ namespace us.frostraptor.modUtils.CustomDialog {
         }
 
         public void SendCompleteMessage() {
-            base.Combat.MessageCenter.PublishMessage(new DialogComplete(this.currentMessage.DialogueSource.GUID));
+            base.Combat.MessageCenter.PublishMessage(new DialogComplete(this.currentMessage.DialogueSourceGUID));
         }
 
         public void SetIsCancelable(bool isCancelable) {
