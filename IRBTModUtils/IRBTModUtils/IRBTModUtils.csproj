@@ -63,7 +63,10 @@
     <Compile Include="CustomDialog\CustomDialogMessage.cs" />
     <Compile Include="CustomDialog\CustomDialogSequence.cs" />
     <Compile Include="CustomDialog\MessageTypes.cs" />
-    <Compile Include="CustomDialog\Patches.cs" />
+    <Compile Include="SharedState.cs" />
+    <Compile Include="Patches\CombatGameStatePatches.cs" />
+    <Compile Include="Patches\CombatHUDPatches.cs" />
+    <Compile Include="Extension\CombatantExtensions.cs" />
     <Compile Include="ModState.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModInit.cs" />

@@ -1,20 +1,21 @@
 ﻿using BattleTech;
 
-namespace us.frostraptor.modUtils {
-    public static class CombatantUtils {
-
-        public static string Label(ICombatant combatant) 
+namespace IRBTModUtils.Extension
+{
+    public static class CombatantExtensions
+    {
+        public static string DistinctId(this ICombatant combatant) 
         {
             string label = "Unknown";
-            if (combatant != null && combatant.GUID != null) 
+            if (combatant != null && combatant.GUID != null)
             {
                 string truncatedGUID = combatant.GUID != null ? string.Format("{0:X}", combatant.GUID.GetHashCode()) : "0xDEADBEEF";
 
-                if (combatant is AbstractActor actor) 
+                if (combatant is AbstractActor actor)
                 {
                     label = $"{actor.DisplayName}_{actor?.GetPilot()?.Name}_{truncatedGUID}";
-                } 
-                else 
+                }
+                else
                 {
                     label = $"{combatant.DisplayName}_{truncatedGUID}";
                 }
