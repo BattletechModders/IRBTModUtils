@@ -6,6 +6,11 @@ namespace IRBTModUtils.Extension
     {
         public static string DistinctId(this ICombatant combatant) 
         {
+            if (SharedState.CombatantLabels != null && SharedState.CombatantLabels.ContainsKey(combatant))
+            {
+                return SharedState.CombatantLabels[combatant];
+            }
+
             string label = "Unknown";
             if (combatant != null && combatant.GUID != null)
             {
@@ -21,6 +26,9 @@ namespace IRBTModUtils.Extension
                 }
 
             }
+
+            SharedState.CombatantLabels[combatant] = label;
+
             return label;
         }
     }

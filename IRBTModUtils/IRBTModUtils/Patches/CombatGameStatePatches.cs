@@ -1,9 +1,7 @@
 ﻿using BattleTech;
-using BattleTech.UI;
 using Harmony;
 using IRBTModUtils;
 using System;
-using us.frostraptor.modUtils.CustomDialog;
 
 namespace us.frostraptor.modUtils {
 
@@ -25,6 +23,7 @@ namespace us.frostraptor.modUtils {
         public static void Prefix() 
         {
             SharedState.Combat = null;
+            SharedState.CombatantLabels.Clear();
         }
     }
 }

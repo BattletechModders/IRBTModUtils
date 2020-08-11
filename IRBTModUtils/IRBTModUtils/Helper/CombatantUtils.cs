@@ -1,10 +1,16 @@
 ﻿using BattleTech;
+using IRBTModUtils;
 
 namespace us.frostraptor.modUtils {
     public static class CombatantUtils {
 
         public static string Label(ICombatant combatant) 
         {
+            if (SharedState.CombatantLabels != null && SharedState.CombatantLabels.ContainsKey(combatant))
+            {
+                return SharedState.CombatantLabels[combatant];
+            }
+
             string label = "Unknown";
             if (combatant != null && combatant.GUID != null) 
             {
@@ -20,6 +26,9 @@ namespace us.frostraptor.modUtils {
                 }
 
             }
+
+            SharedState.CombatantLabels[combatant] = label;
+
             return label;
         }
     }

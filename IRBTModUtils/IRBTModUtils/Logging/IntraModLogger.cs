@@ -65,26 +65,27 @@ namespace us.frostraptor.modUtils.logging
 
         public void Warn(string message)
         {
-            Log("WARNING:" + message);
+            Log("WARN " + message);
             HBSLogger.LogAtLevel(LogLevel.Warning, this.LogLabel + message);
         }
 
         public void Error(string message)
         {
-            Log("ERROR:" + message);
+            Log("ERR " + message);
             HBSLogger.LogAtLevel(LogLevel.Error, this.LogLabel + message);
         }
 
         public void Error(Exception e)
         {
-            Log("ERROR:" + e.Message);
+            Log("ERR " + e.Message);
             HBSLogger.LogAtLevel(LogLevel.Error, this.LogLabel + e.Message);
         }
 
         public void Error(string message, Exception e)
         {
-            Log("ERROR:" + message);
-            Log("ERROR:" + e.Message);
+            Log("ERR " + message);
+            Log("ERR " + e.Message);
+            Log("ERR " + e.StackTrace);
 
             HBSLogger.LogAtLevel(LogLevel.Error, this.LogLabel + message, e);
         }
@@ -96,10 +97,6 @@ namespace us.frostraptor.modUtils.logging
             LogStream.Flush();
         }
 
-        private void LogHBS(string message)
-        {
-            
-        }
-
     }
 }
+
