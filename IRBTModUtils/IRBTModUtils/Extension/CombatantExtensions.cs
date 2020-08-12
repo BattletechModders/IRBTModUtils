@@ -6,6 +6,8 @@ namespace IRBTModUtils.Extension
     {
         public static string DistinctId(this ICombatant combatant) 
         {
+            if (combatant == null) { return "UNKNOWN-NULL"; }
+
             if (SharedState.CombatantLabels != null && SharedState.CombatantLabels.ContainsKey(combatant))
             {
                 return SharedState.CombatantLabels[combatant];

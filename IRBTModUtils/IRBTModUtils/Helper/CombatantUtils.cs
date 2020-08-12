@@ -6,6 +6,8 @@ namespace us.frostraptor.modUtils {
 
         public static string Label(ICombatant combatant) 
         {
+            if (combatant == null) { return "UNKNOWN-NULL"; }
+
             if (SharedState.CombatantLabels != null && SharedState.CombatantLabels.ContainsKey(combatant))
             {
                 return SharedState.CombatantLabels[combatant];
