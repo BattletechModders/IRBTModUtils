@@ -55,7 +55,7 @@
       <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>E:\steam\SteamApps\common\BATTLETECH\BattleTech_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +63,8 @@
     <Compile Include="CustomDialog\CustomDialogMessage.cs" />
     <Compile Include="CustomDialog\CustomDialogSequence.cs" />
     <Compile Include="CustomDialog\MessageTypes.cs" />
+    <Compile Include="Logging\DeferringLogger.cs" />
+    <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="SharedState.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
     <Compile Include="Patches\CombatHUDPatches.cs" />

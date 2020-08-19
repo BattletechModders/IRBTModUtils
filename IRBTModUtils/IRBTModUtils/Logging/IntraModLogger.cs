@@ -14,8 +14,8 @@ namespace us.frostraptor.modUtils.logging
         private readonly string LogLabel;
         private readonly ILog HBSLogger;
 
-        private readonly bool IsDebug;
-        private readonly bool IsTrace;
+        public readonly bool IsDebug;
+        public readonly bool IsTrace;
 
         public IntraModLogger(string modDir, string logFilename = "mod", bool isDebug = false, bool isTrace = false) : this (modDir, logFilename, "mod", isDebug, isTrace)
         {
@@ -90,7 +90,7 @@ namespace us.frostraptor.modUtils.logging
             HBSLogger.LogAtLevel(LogLevel.Error, this.LogLabel + message, e);
         }
 
-        private void Log(string message)
+        public void Log(string message)
         {
             string now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
             LogStream.WriteLine($"{now} - {message}");
