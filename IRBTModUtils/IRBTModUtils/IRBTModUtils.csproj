@@ -64,7 +64,6 @@
     <Compile Include="CustomDialog\CustomDialogSequence.cs" />
     <Compile Include="CustomDialog\MessageTypes.cs" />
     <Compile Include="Logging\DeferringLogger.cs" />
-    <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="SharedState.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
     <Compile Include="Patches\CombatHUDPatches.cs" />
