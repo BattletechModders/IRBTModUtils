@@ -110,13 +110,13 @@ namespace IRBTModUtils.Logging
         {
             // Write our internal log
             string now = DateTime.UtcNow.ToString("HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
-            LogStream.WriteLine(now + message);
+            LogStream.WriteLine(now + " " + message);
             LogStream.Flush();
 
             if (HBSLogger != null)
             {
                 // Write the HBS logging
-                HBSLogger.LogAtLevel(Level, now + Label + message);
+                HBSLogger.LogAtLevel(Level, now + " " + Label + " " + message);
             }
         }
 
@@ -124,17 +124,17 @@ namespace IRBTModUtils.Logging
         {
             // Write our internal log
             string now = DateTime.UtcNow.ToString("HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
-            if (message != null) LogStream.WriteLine(now + message);
-            LogStream.WriteLine(now + e?.Message);
-            LogStream.WriteLine(now + e?.StackTrace);
+            if (message != null) LogStream.WriteLine(now + " " + message);
+            LogStream.WriteLine(now + " " + e?.Message);
+            LogStream.WriteLine(now + " " + e?.StackTrace);
             LogStream.Flush();
 
             if (HBSLogger != null)
             {
                 // Write the HBS logging
                 if (message != null) LogStream.WriteLine(now + message);
-                HBSLogger.LogAtLevel(Level, now + Label + e?.Message);
-                HBSLogger.LogAtLevel(Level, now + Label + "Stacktrace available in mod logs");
+                HBSLogger.LogAtLevel(Level, now + " " + Label + " " + e?.Message);
+                HBSLogger.LogAtLevel(Level, now + " " + Label + "Stacktrace available in mod logs");
             }
         }
     }
