@@ -8,6 +8,17 @@ using UnityEngine;
 
 namespace us.frostraptor.modUtils.CustomDialog {
     public class CustomDialogSequence : MultiSequence {
+        private bool isCancelable;
+
+        private DialogState state;
+
+        private readonly CombatHUDDialogSideStack sideStack;
+
+        public List<DialogueContent> pendingMessages = new List<DialogueContent>();
+
+        private CombatHUDDialogItem activeDialog;
+
+        private CustomDialogMessage currentMessage;
 
         public CustomDialogSequence(CombatGameState Combat, CombatHUDDialogSideStack sideStack, 
             bool isCancelable = true) : base(Combat) {
@@ -17,7 +28,7 @@ namespace us.frostraptor.modUtils.CustomDialog {
         }
 
         public void SetState(DialogState newState) {
-            Mod.Log.Trace($"CDS::SetState - state changing to: {newState}");
+            Mod.Log.Trace?.Write($"CDS::SetState - state changing to: {newState}");
             if (this.state == newState) {
                 return;
             }
@@ -47,56 +58,55 @@ namespace us.frostraptor.modUtils.CustomDialog {
         }
 
         private void Play() {
-            Mod.Log.Debug($"CDS::Play - invoked");
+            Mod.Log.Debug?.Write($"CDS::Play - invoked");
            
             this.sideStack.PanelFrame.gameObject.SetActive(true);
             if (this.currentMessage.DialogueSource != null && this.currentMessage.DialogueSource.team.IsLocalPlayer) {
-                Mod.Log.Debug($"  Displaying pilot portrait");
+                Mod.Log.Debug?.Write($"  Displaying pilot portrait");
                 this.sideStack.ShowPortrait(this.currentMessage.DialogueSource.GetPilot().GetPortraitSpriteThumb());
             } else {
-                Mod.Log.Debug($"  Displaying castDef portrait");
+                Mod.Log.Debug?.Write($"  Displaying castDef portrait");
                 this.sideStack.ShowPortrait(this.currentMessage.DialogueContent.CastDef.defaultEmotePortrait.LoadPortrait(false));
             }
 
             try {
                 Transform speakerNameFieldT = this.sideStack.gameObject.transform.Find("Representation/dialog-layout/Portrait/speakerNameField");
-                if (speakerNameFieldT == null) { Mod.Log.Warn("COULD NOT FIND speakerNameFieldT!"); }
+                if (speakerNameFieldT == null) { Mod.Log.Warn?.Write("COULD NOT FIND speakerNameFieldT!"); }
                 speakerNameFieldT.gameObject.SetActive(true);
 
-                Mod.Log.Debug($" Setting SpeakerName to: '{this.currentMessage.DialogueContent.SpeakerName}' with callsign: '{this.currentMessage.DialogueContent.CastDef.callsign}'");
+                Mod.Log.Debug?.Write($" Setting SpeakerName to: '{this.currentMessage.DialogueContent?.SpeakerName}' with callsign: '{this.currentMessage.DialogueContent?.CastDef?.callsign}'");
                 LocalizableText speakerNameLT = speakerNameFieldT.GetComponentInChildren<LocalizableText>();
-                speakerNameLT.SetText(this.currentMessage.DialogueContent.SpeakerName);
+                speakerNameLT.SetText(this.currentMessage.DialogueContent?.SpeakerName);
                 speakerNameLT.gameObject.SetActive(true);
                 speakerNameLT.alignment = TMPro.TextAlignmentOptions.Bottom;
 
             } catch (Exception e) {
-                Mod.Log.Error("Failed to set display name due to error!");
-                Mod.Log.Error(e);
+                Mod.Log.Error?.Write(e, "Failed to set display name due to error!");
             }
 
             this.activeDialog = this.sideStack.GetNextItem();
             this.activeDialog.Init(this.currentMessage.ShowDuration, true, new Action(this.AfterDialogShow), new Action(this.AfterDialogHide));
 
-            Mod.Log.Debug($"CDS - Showing dialog: words: '{this.currentMessage.DialogueContent.words}' color: '{this.currentMessage.DialogueContent.wordsColor}' speakerName: '{this.currentMessage.DialogueContent.SpeakerName}' timeout: {this.currentMessage.ShowDuration}");
+            Mod.Log.Debug?.Write($"CDS - Showing dialog: words: '{this.currentMessage.DialogueContent.words}' color: '{this.currentMessage.DialogueContent.wordsColor}' speakerName: '{this.currentMessage.DialogueContent.SpeakerName}' timeout: {this.currentMessage.ShowDuration}");
             this.activeDialog.Show(this.currentMessage.DialogueContent.words, this.currentMessage.DialogueContent.wordsColor, this.currentMessage.DialogueContent.SpeakerName);
-            Mod.Log.Trace("CDS::Play - DONE");
+            Mod.Log.Trace?.Write("CDS::Play - DONE");
         }
 
         public void AfterDialogShow() {
-            Mod.Log.Trace("CDS:ADS - entered.");
+            Mod.Log.Trace?.Write("CDS:ADS - entered.");
             this.sideStack.AfterDialogShow();
         }
 
         public void AfterDialogHide() {
-            Mod.Log.Trace("CDS:ADH - entered.");
+            Mod.Log.Trace?.Write("CDS:ADH - entered.");
             this.sideStack.AfterDialogHide();
 
             Transform speakerNameFieldT = this.sideStack.gameObject.transform.Find("Representation/dialog-layout/Portrait/speakerNameField");
-            if (speakerNameFieldT == null) { Mod.Log.Warn("COULD NOT FIND speakerNameFieldT!"); }
+            if (speakerNameFieldT == null) { Mod.Log.Warn?.Write("COULD NOT FIND speakerNameFieldT!"); }
             speakerNameFieldT.gameObject.SetActive(false);
 
             if (ModState.DialogueQueue.Count > 0) {
-                Mod.Log.Trace("  DialogQueue has additional messages, reading another instead of exiting.");
+                Mod.Log.Trace?.Write("  DialogQueue has additional messages, reading another instead of exiting.");
                 this.currentMessage = (CustomDialogMessage)ModState.DialogueQueue.Dequeue();
                 this.SetState(DialogState.Talking);
                 return;
@@ -114,13 +124,13 @@ namespace us.frostraptor.modUtils.CustomDialog {
         }
 
         public override void OnComplete() {
-            Mod.Log.Trace("CDS:OC - entered.");
+            Mod.Log.Trace?.Write("CDS:OC - entered.");
 
             base.OnComplete();
             AudioEventManager.DialogSequencePlaying = false;
             //this.SendCompleteMessage();
             ModState.IsDialogStackActive = false;
-            Mod.Log.Trace("CDS:OC - Setting IsDialogStackActive = false");
+            Mod.Log.Trace?.Write("CDS:OC - Setting IsDialogStackActive = false");
         }
 
         public void SendCompleteMessage() {
@@ -181,17 +191,7 @@ namespace us.frostraptor.modUtils.CustomDialog {
             this.SendCompleteMessage();
         }
 
-        private bool isCancelable;
 
-        private DialogState state;
-
-        private readonly CombatHUDDialogSideStack sideStack;
-
-        public List<DialogueContent> pendingMessages = new List<DialogueContent>();
-
-        private CombatHUDDialogItem activeDialog;
-
-        private CustomDialogMessage currentMessage;
 
     }
 }

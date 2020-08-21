@@ -35,9 +35,9 @@
         public DialogueOptions Dialogue = new DialogueOptions();
 
         public void LogConfig() {
-            Mod.Log.Info("=== MOD CONFIG BEGIN ===");
-            Mod.Log.Info($"  DEBUG: {this.Debug} Trace: {this.Trace}");
-            Mod.Log.Info("=== DIALOGUE OPTIONS ===");
+            Mod.Log.Info?.Write("=== MOD CONFIG BEGIN ===");
+            Mod.Log.Info?.Write($"  DEBUG: {this.Debug} Trace: {this.Trace}");
+            Mod.Log.Info?.Write("=== DIALOGUE OPTIONS ===");
         }
     }
 }

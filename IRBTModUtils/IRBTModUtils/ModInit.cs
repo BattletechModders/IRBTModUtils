@@ -1,4 +1,5 @@
 ﻿using Harmony;
+using IRBTModUtils.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace IRBTModUtils {
         public const string HarmonyPackage = "us.frostraptor.IRBTModUtils";
         public const string LogName = "irbt_mod_utils";
 
-        public static IntraModLogger Log;
+        public static DeferringLogger Log;
         public static string ModDir;
         public static ModConfig Config;
 
@@ -32,37 +33,36 @@ namespace IRBTModUtils {
                 Mod.Config = new ModConfig();
             }
 
-            Log = new IntraModLogger(modDirectory, LogName, Config.Debug, Config.Trace);
+            Log = new DeferringLogger(modDirectory, LogName, Config.Debug, Config.Trace);
 
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
-            Log.Info($"Assembly version: {fvi.ProductVersion}");
+            Log.Info?.Write($"Assembly version: {fvi.ProductVersion}");
 
-            Log.Debug($"ModDir is:{modDirectory}");
-            Log.Debug($"mod.json settings are:({settingsJSON})");
+            Log.Debug?.Write($"ModDir is:{modDirectory}");
+            Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
             Mod.Config.LogConfig();
 
             if (settingsE != null) {
-                Log.Info($"ERROR reading settings file! Error was: {settingsE}");
+                Log.Info?.Write($"ERROR reading settings file! Error was: {settingsE}");
             } else {
-                Log.Info($"INFO: No errors reading settings file.");
+                Log.Info?.Write($"INFO: No errors reading settings file.");
             }
 
             // Try to determine the battletech directory
             string fileName = Process.GetCurrentProcess().MainModule.FileName;
             string btDir = Path.GetDirectoryName(fileName);
-            Log.Debug($"BT File is: {fileName} with btDir: {btDir}");
+            Log.Debug?.Write($"BT File is: {fileName} with btDir: {btDir}");
             if (Coordinator.CallSigns == null) {
                 string filePath = Path.Combine(btDir, Mod.Config.Dialogue.CallsignsPath);
-                Mod.Log.Debug($"Reading files from {filePath}");
+                Mod.Log.Debug?.Write($"Reading files from {filePath}");
                 try {
                     Coordinator.CallSigns = File.ReadAllLines(filePath).ToList();
                 } catch (Exception e) {
-                    Mod.Log.Error("Failed to read callsigns from BT directory!");
-                    Mod.Log.Error(e);
+                    Mod.Log.Error?.Write(e, "Failed to read callsigns from BT directory!");
                     Coordinator.CallSigns = new List<string> { "Alpha", "Beta", "Gamma" };
                 }
-                Mod.Log.Debug($"Callsign count is: {Coordinator.CallSigns.Count}");
+                Mod.Log.Debug?.Write($"Callsign count is: {Coordinator.CallSigns.Count}");
             }
 
             var harmony = HarmonyInstance.Create(HarmonyPackage);

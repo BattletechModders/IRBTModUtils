@@ -6,6 +6,7 @@ namespace us.frostraptor.modUtils.logging
 {
 
     // Logs to a static file inside the mod class 
+    [Obsolete("Use DeferringLogger instead", true)]
     public class IntraModLogger
     {
 
