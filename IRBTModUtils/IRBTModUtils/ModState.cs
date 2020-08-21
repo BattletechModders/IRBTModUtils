@@ -1,6 +1,6 @@
-﻿using BattleTech;
-using BattleTech.UI;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace IRBTModUtils {
     // State that only *this* mod cares about or has access to
@@ -8,6 +8,7 @@ namespace IRBTModUtils {
 
         public static Queue DialogueQueue = new Queue();
         public static bool IsDialogStackActive = false;
+        public static Dictionary<string, Sprite> Portraits = new Dictionary<string, Sprite>();
 
         public static void Reset() {
             // Reinitialize state

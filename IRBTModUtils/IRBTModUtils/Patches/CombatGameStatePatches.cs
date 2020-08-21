@@ -2,6 +2,8 @@
 using Harmony;
 using IRBTModUtils;
 using System;
+using System.IO;
+using UnityEngine;
 
 namespace us.frostraptor.modUtils {
 
@@ -13,6 +15,27 @@ namespace us.frostraptor.modUtils {
         public static void Postfix(CombatGameState __instance) 
         {
             SharedState.Combat = __instance;
+
+            // Load any dialogue portraits at startup
+            if (ModState.Portraits.Count == 0)
+            {
+                Mod.Log.Info?.Write($"Loading {Mod.Config.Dialogue.Portraits} portrait sprites.");
+                foreach (string portraitPath in Mod.Config.Dialogue.Portraits)
+                {
+                    string path = Utilities.PathUtils.AppendPath(EmotePortrait.SpriteBasePath, portraitPath, appendForwardSlash: false);
+                    if (File.Exists(path))
+                    {
+                        Sprite sprite = Utilities.ImageUtils.LoadSprite(path);
+                        Mod.Log.Info?.Write($"Added sprite for portraitPath: {portraitPath}");
+                        ModState.Portraits.Add(portraitPath, sprite);
+                    }
+                    else
+                    {
+                        Mod.Log.Warn?.Write("$Failed to load portrait at path: {path}!");
+                    }
+                }
+                Mod.Log.Info?.Write($"Loaded {ModState.Portraits.Keys.Count} portraits.");
+            }
         }
     }
 
