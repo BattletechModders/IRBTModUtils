@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,9 +6,9 @@ using System.Linq;
 using us.frostraptor.modUtils.Redzen;
 
 namespace RedzenTests {
-    [TestFixture]
+    [TestClass]
     public class GaussianGeneratorTests {
-        [Test]
+        [TestMethod]
         public void TestSampleBounds() {
             Xoshiro256PlusRandomBuilder builder = new Xoshiro256PlusRandomBuilder();
             IRandomSource rng = builder.Create();
@@ -40,7 +40,7 @@ namespace RedzenTests {
             }
         }
 
-        [Test]
+        [TestMethod]
         public void TestTimeFor4096() {
             Xoshiro256PlusRandomBuilder builder = new Xoshiro256PlusRandomBuilder();
             IRandomSource rng = builder.Create();

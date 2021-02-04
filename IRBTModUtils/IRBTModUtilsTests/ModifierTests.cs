@@ -1,14 +1,14 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using us.frostraptor.modUtils.math;
 
 namespace HexUtilsModifiersTests
 {
 
-    [TestFixture]
+    [TestClass]
     public class DecayingAttackTests
     {
 
-        [Test]
+        [TestMethod]
         public void ZoomMod()
         {
             // 0 to 3 over 3 steps
@@ -38,7 +38,7 @@ namespace HexUtilsModifiersTests
             Assert.AreEqual(-3, mod);
         }
 
-        [Test]
+        [TestMethod]
         public void BrawlerMod()
         {
             // -3 to +3 over 6 steps
@@ -68,7 +68,7 @@ namespace HexUtilsModifiersTests
             Assert.AreEqual(3, mod);
         }
 
-        [Test]
+        [TestMethod]
         public void SniperMod()
         {
             // +3 to -3 over 6 steps
@@ -100,7 +100,7 @@ namespace HexUtilsModifiersTests
         }
 
         // === Modiifers used by LA in RT ===
-        [Test]
+        [TestMethod]
         public void LAMod()
         {
             int initialMod = 0, finalMod = -1, hexSteps = 10;
@@ -122,7 +122,7 @@ namespace HexUtilsModifiersTests
             Assert.AreEqual(-1, mod);
         }
 
-        [Test]
+        [TestMethod]
         public void LAMod2()
         {
             int initialMod = -4, finalMod = 0, hexSteps = 4;
@@ -158,7 +158,7 @@ namespace HexUtilsModifiersTests
 
 
         // === Modifiers used by Harkonnen in his NAOP mod ===
-        [Test]
+        [TestMethod]
         public void HarkonnenMod()
         {
             int initialMod = 0, finalMod = 5, hexSteps = 2;

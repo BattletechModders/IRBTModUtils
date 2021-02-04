@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,10 +7,10 @@ using us.frostraptor.modUtils.math;
 namespace HexUtilsCountingTests {
 
 
-    [TestFixture]
+    [TestClass]
     public class HexUtilsTexts {
 
-        [Test]
+        [TestMethod]
         public void MaxHexes() {
             // starts at 2, goes to 3 at 3 hexes, ends at 4 at 6 hexes
             Assert.AreEqual(6, HexUtils.HexesInRange(2, 4, 3));
@@ -33,10 +33,10 @@ namespace HexUtilsCountingTests {
         }
     }
 
-    [TestFixture]
+    [TestClass]
     public class DivisionVsIterationTest {
 
-        [Test]
+        [TestMethod]
         public void HexCounter() {
             Assert.AreEqual(0, HexUtils.CountHexes(0f, true));
             Assert.AreEqual(0, HexUtils.CountHexes(0f, false));
@@ -54,7 +54,7 @@ namespace HexUtilsCountingTests {
             Assert.AreEqual(1, HexUtils.CountHexes(31f, false));
         }
 
-        [Test]
+        [TestMethod]
         public void DivVsIter() {
             List<float> ranges = RangesInMeters();
             List<int> divHexes = new List<int>();

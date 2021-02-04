@@ -1,5 +1,7 @@
 ﻿using BattleTech;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace us.frostraptor.modUtils {
 
@@ -123,21 +125,34 @@ namespace us.frostraptor.modUtils {
             return normalizedVal;
         }
 
+        // Legacy implementation, assumes the modifier spread in RT
         private static int GetModifier(Pilot pilot, int skillValue, string abilityDefIdL5, string abilityDefIdL8) {
+            return GetModifier(pilot, skillValue, ModifierBySkill, new List<string>() { abilityDefIdL5, abilityDefIdL8 }, 1);
+        }
+
+        // Customizable modifier spread as per BD's request
+        public static int GetModifier(Pilot pilot, int skillValue, Dictionary<int, int> modifiersForSkill, List<string> abilityDefIds, float abilityMulti = 1f)
+        {
             int normalizedVal = NormalizeSkill(skillValue);
-            int modifier = ModifierBySkill[normalizedVal];
+            int modifier = modifiersForSkill[normalizedVal];
 
-            string aDefL5 = abilityDefIdL5?.ToLower(), aDefL8 = abilityDefIdL8?.ToLower();
-            bool hasL5 = false, hasL8 = false;
-            foreach (Ability ability in pilot.Abilities) {
-                string abilityId = ability?.Def?.Id?.ToLower();
-                hasL5 |= abilityId != null && abilityId.Equals(aDefL5);
-                hasL8 |= abilityId != null && abilityId.Equals(aDefL8);
-            }
-            if (hasL5) { modifier++; }
-            if (hasL8) { modifier++; }
+            int matchedAbilities = MatchedAbilities(pilot, abilityDefIds);
+            int abilityMod = (int)Math.Ceiling(matchedAbilities * abilityMulti);
 
-            return modifier;
+            return modifier + abilityMod;
+        }
+
+        private static int MatchedAbilities(Pilot pilot, List<string> abilityDefIds)
+        {
+            List<string> lcAbilityDefIds = abilityDefIds.Select(aDefId => aDefId.ToLower()).ToList();
+
+            int matchedCount = 0;
+            matchedCount = pilot.Abilities.Where(a => a != null && a.Def != null && a.Def.Id != null)
+                .Select(a => a.Def.Id.ToLower())
+                .Where(aDefId => lcAbilityDefIds.Contains(aDefId))
+                .Count();
+
+            return matchedCount;
         }
     }
 }

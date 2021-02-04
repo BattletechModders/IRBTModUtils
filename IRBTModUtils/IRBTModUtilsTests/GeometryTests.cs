@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +9,10 @@ using us.frostraptor.modUtils.math;
 
 namespace GeometryTests {
 
-    [TestFixture]
+    [TestClass]
     public class GeometryTests {
 
-        [Test]
+        [TestMethod]
         public void CentroidTest() {
             List<Vector3> testPositions = new List<Vector3>() {
                 new Vector3(-840f, 133.4f, 23f),

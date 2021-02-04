@@ -1,5 +1,5 @@
 ﻿using BattleTech;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,11 @@ using us.frostraptor.modUtils;
 
 namespace IRBTModUtilsTests
 {
-    [TestFixture]
+    [TestClass]
     public class SkillUtilsTests
     {
 
-        [Test]
+        [TestMethod]
         public void LegacyGetModifier_Base()
         {
             HumanDescriptionDef humanDescDef = new HumanDescriptionDef();
