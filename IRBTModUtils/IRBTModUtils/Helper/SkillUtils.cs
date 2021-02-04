@@ -144,6 +144,9 @@ namespace us.frostraptor.modUtils {
 
         private static int MatchedAbilities(Pilot pilot, List<string> abilityDefIds)
         {
+            if (pilot == null || pilot.Abilities == null || pilot.Abilities.Count == 0 ||
+                abilityDefIds == null || abilityDefIds.Count == 0) return 0;
+
             List<string> lcAbilityDefIds = abilityDefIds.Select(aDefId => aDefId.ToLower()).ToList();
 
             int matchedCount = 0;

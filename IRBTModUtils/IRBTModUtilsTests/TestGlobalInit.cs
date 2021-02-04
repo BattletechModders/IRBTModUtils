@@ -15,7 +15,7 @@ namespace IRBTModUtilsTests
         public static void TestInitialize(TestContext testContext)
         {
             IRBTModUtils.Mod.Log = new DeferringLogger(testContext.TestResultsDirectory,
-                "lowvis_tests", "LVT", true, true);
+                "irbtmodutil_tests", "LVT", true, true);
 
             IRBTModUtils.Mod.Config = new IRBTModUtils.ModConfig();
         }
