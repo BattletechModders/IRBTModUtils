@@ -127,6 +127,19 @@ namespace IRBTModUtils.Logging
             if (message != null) LogStream.WriteLine(now + " " + message);
             LogStream.WriteLine(now + " " + e?.Message);
             LogStream.WriteLine(now + " " + e?.StackTrace);
+
+            if (e?.InnerException != null)
+            {
+                LogStream.WriteLine(now + " " + e?.InnerException.Message);
+                LogStream.WriteLine(now + " " + e?.InnerException.StackTrace);
+
+                if (e.InnerException?.InnerException != null)
+                {
+                    LogStream.WriteLine(now + " " + e?.InnerException.InnerException.Message);
+                    LogStream.WriteLine(now + " " + e?.InnerException.InnerException.StackTrace);
+                }
+            }
+
             LogStream.Flush();
 
             if (HBSLogger != null)
