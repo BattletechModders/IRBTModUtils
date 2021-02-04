@@ -1,16 +1,18 @@
 {
     "Name": "IRBTModUtils",
     "Enabled": true,
-    "Version": "1.6.3",
+    "Hidden": true,
+    "Version": "1.8.0",
     "Description": "Utility classes required by other mods",
     "Author": "IceRaptor",
     "Website": "https://github.com/IceRaptor/IRBTModUtils",
     "Contact": "",
     "DLL": "IRBTModUtils.dll",
+    "DLLEntryPoint": "IRBTModUtils.Mod.Init",
     "DependsOn" : [ ],
     "Settings": { 
-        "Debug" : true,
-        "Trace" : true,
+        "Debug" : false,
+        "Trace" : false,
         "Dialogue" : {
             "CallsignsPath" : "BattleTech_Data/StreamingAssets/data/nameLists/name_callsign.txt",
             "Portraits" : [
