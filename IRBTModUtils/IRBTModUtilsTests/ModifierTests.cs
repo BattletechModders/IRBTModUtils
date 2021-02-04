@@ -1,13 +1,16 @@
 ﻿using NUnit.Framework;
 using us.frostraptor.modUtils.math;
 
-namespace HexUtilsModifiersTests {
+namespace HexUtilsModifiersTests
+{
 
     [TestFixture]
-    public class DecayingAttackTests {
+    public class DecayingAttackTests
+    {
 
         [Test]
-        public void ZoomMod() {
+        public void ZoomMod()
+        {
             // 0 to 3 over 3 steps
 
             // No range, no modifier
@@ -36,7 +39,8 @@ namespace HexUtilsModifiersTests {
         }
 
         [Test]
-        public void BrawlerMod() {
+        public void BrawlerMod()
+        {
             // -3 to +3 over 6 steps
 
             // No range, full modifier
@@ -65,7 +69,8 @@ namespace HexUtilsModifiersTests {
         }
 
         [Test]
-        public void SniperMod() {
+        public void SniperMod()
+        {
             // +3 to -3 over 6 steps
 
             // No range, full modifier
@@ -96,7 +101,8 @@ namespace HexUtilsModifiersTests {
 
         // === Modiifers used by LA in RT ===
         [Test]
-        public void LAMod() {
+        public void LAMod()
+        {
             int initialMod = 0, finalMod = -1, hexSteps = 10;
 
             // No range, no modifier
@@ -117,7 +123,8 @@ namespace HexUtilsModifiersTests {
         }
 
         [Test]
-        public void LAMod2() {
+        public void LAMod2()
+        {
             int initialMod = -4, finalMod = 0, hexSteps = 4;
 
             // No range, no modifier
@@ -152,7 +159,8 @@ namespace HexUtilsModifiersTests {
 
         // === Modifiers used by Harkonnen in his NAOP mod ===
         [Test]
-        public void HarkonnenMod() {
+        public void HarkonnenMod()
+        {
             int initialMod = 0, finalMod = 5, hexSteps = 2;
             int mod = HexUtils.DecayingModifier(initialMod, finalMod, hexSteps, 0f);
             Assert.AreEqual(0, mod);
