@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 
 namespace IRBTModUtils.CustomInfluenceMap
 {
+	// CleverGirl will inject these factors in the influenceMap tree, used to determine where the AI will move.
+	//  These factors should only relate to the position of nearby allies.
 	public abstract class CustomInfluenceMapAllyFactor : InfluenceMapAllyFactor
 	{
+		public CustomInfluenceMapAllyFactor() { }
+
 		public override string Name => "ALWAYS OVERRIDE ME!";
 
 		// We always return INVALID_UNSET because most custom behaviors will use unique behavior variables or calcluations
