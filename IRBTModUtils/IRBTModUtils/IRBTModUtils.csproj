@@ -63,6 +63,9 @@
     <Compile Include="CustomDialog\CustomDialogMessage.cs" />
     <Compile Include="CustomDialog\CustomDialogSequence.cs" />
     <Compile Include="CustomDialog\MessageTypes.cs" />
+    <Compile Include="CustomInfluenceMap\CustomInfluenceMapAllyFactor.cs" />
+    <Compile Include="CustomInfluenceMap\CustomInfluenceMapHostileFactor.cs" />
+    <Compile Include="CustomInfluenceMap\CustomInfluenceMapPositionFactor.cs" />
     <Compile Include="Logging\DeferringLogger.cs" />
     <Compile Include="SharedState.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
