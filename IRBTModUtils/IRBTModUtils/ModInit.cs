@@ -1,4 +1,5 @@
 ﻿using Harmony;
+using IRBTModUtils.Extension;
 using IRBTModUtils.Logging;
 using Newtonsoft.Json;
 using System;
@@ -10,8 +11,10 @@ using System.Reflection;
 using us.frostraptor.modUtils.CustomDialog;
 using us.frostraptor.modUtils.logging;
 
-namespace IRBTModUtils {
-    public static class Mod {
+namespace IRBTModUtils
+{
+    public static class Mod
+    {
 
         public const string HarmonyPackage = "us.frostraptor.IRBTModUtils";
         public const string LogName = "irbt_mod_utils";
@@ -22,13 +25,17 @@ namespace IRBTModUtils {
 
         public static readonly Random Random = new Random();
 
-        public static void Init(string modDirectory, string settingsJSON) {
-            ModDir = modDirectory; 
+        public static void Init(string modDirectory, string settingsJSON)
+        {
+            ModDir = modDirectory;
 
             Exception settingsE = null;
-            try {
+            try
+            {
                 Mod.Config = JsonConvert.DeserializeObject<ModConfig>(settingsJSON);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 settingsE = e;
                 Mod.Config = new ModConfig();
             }
@@ -43,9 +50,12 @@ namespace IRBTModUtils {
             Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
             Mod.Config.LogConfig();
 
-            if (settingsE != null) {
+            if (settingsE != null)
+            {
                 Log.Info?.Write($"ERROR reading settings file! Error was: {settingsE}");
-            } else {
+            }
+            else
+            {
                 Log.Info?.Write($"INFO: No errors reading settings file.");
             }
 
@@ -53,12 +63,16 @@ namespace IRBTModUtils {
             string fileName = Process.GetCurrentProcess().MainModule.FileName;
             string btDir = Path.GetDirectoryName(fileName);
             Log.Debug?.Write($"BT File is: {fileName} with btDir: {btDir}");
-            if (Coordinator.CallSigns == null) {
+            if (Coordinator.CallSigns == null)
+            {
                 string filePath = Path.Combine(btDir, Mod.Config.Dialogue.CallsignsPath);
                 Mod.Log.Debug?.Write($"Reading files from {filePath}");
-                try {
+                try
+                {
                     Coordinator.CallSigns = File.ReadAllLines(filePath).ToList();
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     Mod.Log.Error?.Write(e, "Failed to read callsigns from BT directory!");
                     Coordinator.CallSigns = new List<string> { "Alpha", "Beta", "Gamma" };
                 }
@@ -69,5 +83,27 @@ namespace IRBTModUtils {
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
+        // Invoked when ModTek has loaded all mods
+        public static void FinishedLoading()
+        {
+            Mod.Log.Info?.Write($"Checking for UnitMoveModifierTypes in assemblies");
+            // Record custom types from mods
+            foreach (var type in GetAllTypesThatImplementInterface<MechMoveModifier>())
+            {
+                Mod.Log.Info?.Write($"Adding move modifier: {type.FullName}");
+                MechMoveModifier instance = (MechMoveModifier)Activator.CreateInstance(type);
+                ModState.MoveModifiers.Add(instance);
+            }
+        }
+
+        private static IEnumerable<Type> GetAllTypesThatImplementInterface<T>()
+        {
+            var targetType = typeof(T);
+            return AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !a.IsDynamic)
+                .SelectMany(s => s.GetTypes())
+                .Where(p => !p.IsInterface && !p.IsAbstract)
+                .Where(p => targetType.IsAssignableFrom(p));
+        }
     }
 }

@@ -67,7 +67,10 @@
     <Compile Include="CustomInfluenceMap\CustomInfluenceMapHostileFactor.cs" />
     <Compile Include="CustomInfluenceMap\CustomInfluenceMapPositionFactor.cs" />
     <Compile Include="CustomInfluenceMap\InfluenceMapFactorsToRemove.cs" />
+    <Compile Include="Extension\MechExtensions.cs" />
+    <Compile Include="Extension\MechMoveModifier.cs" />
     <Compile Include="Logging\DeferringLogger.cs" />
+    <Compile Include="Patches\MechPatches.cs" />
     <Compile Include="SharedState.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
     <Compile Include="Patches\CombatHUDPatches.cs" />
