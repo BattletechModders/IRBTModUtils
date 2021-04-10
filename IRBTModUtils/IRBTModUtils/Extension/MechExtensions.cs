@@ -1,21 +1,23 @@
 ﻿using BattleTech;
+using System;
 
 namespace IRBTModUtils.Extension
 {
     public static class MechExtensions
     {
-        public static float ModifiedWalkDistance(this Mech mech) 
+        public static float ModifiedWalkDistance(this Mech mech)
         {
+            Mod.Log.Info?.Write($"ModifiedWalkDistance for: {mech.DistinctId()}");
             float walkDistance = 0f;
             if (mech == null) { return walkDistance; }
 
             float total = 0f;
             foreach (MechMoveModifier moveModifier in ModState.MoveModifiers)
             {
-                total = moveModifier.ModifyWalkSpeed(mech);
+                total += moveModifier.WalkSpeedModifier(mech);
             }
 
-            walkDistance = mech.WalkSpeed - total;
+            walkDistance = (float)Math.Ceiling(mech.WalkSpeed - total);
             if (walkDistance < Mod.Config.MinimumMove)
                 walkDistance = Mod.Config.MinimumMove;
 
@@ -24,38 +26,22 @@ namespace IRBTModUtils.Extension
 
         public static float ModifiedRunDistance(this Mech mech)
         {
+            Mod.Log.Info?.Write($"ModifiedRunDistance for: {mech.DistinctId()}");
             float runDistance = 0f;
             if (mech == null) { return runDistance; }
 
             float total = 0f;
             foreach (MechMoveModifier moveModifier in ModState.MoveModifiers)
             {
-                total = moveModifier.ModifyRunSpeed(mech);
+                total += moveModifier.RunSpeedModifier(mech);
             }
 
-            runDistance = mech.RunSpeed - total;
+            runDistance = (float)Math.Ceiling(mech.RunSpeed - total);
             if (runDistance < Mod.Config.MinimumMove)
                 runDistance = Mod.Config.MinimumMove;
 
             return runDistance;
         }
 
-        public static float ModifiedJumpDistance(this Mech mech)
-        {
-            float jumpDistance = 0f;
-            if (mech == null) { return jumpDistance; }
-
-            float total = 0f;
-            foreach (MechMoveModifier moveModifier in ModState.MoveModifiers)
-            {
-                total = moveModifier.ModifyJumpSpeed(mech);
-            }
-
-            jumpDistance = mech.JumpDistance - total;
-            if (jumpDistance < Mod.Config.MinimumJump)
-                jumpDistance = Mod.Config.MinimumJump;
-
-            return jumpDistance;
-        }
     }
 }
