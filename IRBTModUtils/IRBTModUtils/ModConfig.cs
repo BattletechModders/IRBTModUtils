@@ -3,7 +3,7 @@
     public class ModStats {
     }
 
-    public class Features
+    public class FeatureState
     {
         public bool EnableMovementModifiers = true;
     }
@@ -13,7 +13,7 @@
         public bool Debug = true;
         public bool Trace = false;
 
-        public Features FeatureState = new Features();
+        public FeatureState Features = new FeatureState();
 
         // This is set to 40m, the minimum required to move one 'hex' no matter the penalties
         public float MinimumMove = 40f;
@@ -51,11 +51,12 @@
             Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("--- FEATURES ---");
-            Mod.Log.Info?.Write($"  EnableMovementModifiers: {this.FeatureState.EnableMovementModifiers}");
+            Mod.Log.Info?.Write($"  EnableMovementModifiers: {this.Features.EnableMovementModifiers}");
             Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("--- DIALOGUE OPTIONS ---");
             Mod.Log.Info?.Write("");
+            Mod.Log.Info?.Write("=== MOD CONFIG END ===");
         }
     }
 }

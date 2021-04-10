@@ -9,8 +9,8 @@ namespace IRBTModUtils.Extension
 {
     public abstract class MechMoveModifier
     {
-        public abstract float ModifyWalkSpeed(Mech mech);
-        public abstract float ModifyRunSpeed(Mech mech);
-        public abstract float ModifyJumpSpeed(Mech mech);
+        public abstract float WalkSpeedModifier(Mech mech);
+        public abstract float RunSpeedModifier(Mech mech);
+      
     }
 }
