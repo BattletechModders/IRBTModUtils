@@ -2,6 +2,20 @@
 A collection of utility classes and helpers that support mods for the [HBS BattleTech](http://battletechgame.com/) game.
 
 
+## Mech Move Modifiers
+
+Various systems may want to patch the movement speeds of Mechs. Overlapping Harmony patches can be messy, so IRBTModUtils provides an API that allows systems to inject their own modifications. IRBTModUtils will scan all loaded assemblies for classes that extend `IRBTModUtils.Extension.MechMoveModifier` during the ModTek 'FinishedLoading' call. These implementations will be invoked to calculate the following properties of the Mech class:
+
+* MaxWalkDistance
+* MaxBackwardDistance
+* MaxSprintDistance
+
+Other mods may want to reference these values directly. To do so, simply import `IRBTModUtils.Extension` and use the `ModifiedWalkDistance` and `ModifiedRunDistance` extensions on your target Mech. These methods will fetch the base distance (mech.WalkSpeed and mech.RunSpeed respectively) then apply any configured modifiers to them.
+
+This mod sets a minimum move distance, expressed as `Settings.MinimumMove` in `mod.json`. If the sum of all modifiers reduces the walk or run distance below this value, it will be returned instead.
+
+This feature patches several methods. If you'd like to disable it entirely, set `Settings.Features.EnableMovementModifers` to false in `mod.json`. 
+
 ## Custom Dialog
 
 Loreum ipsum
