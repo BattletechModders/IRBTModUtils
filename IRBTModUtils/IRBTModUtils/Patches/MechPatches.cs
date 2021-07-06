@@ -24,7 +24,7 @@ namespace IRBTModUtils.Patches
         public static void Postfix(Mech __instance, ref float __result)
         {
             if (SharedState.Combat != null)
-                __result = __instance.ModifiedWalkDistance();
+                __result = __instance.ModifiedWalkDistanceExt(false);
         }
     }
 
@@ -38,7 +38,7 @@ namespace IRBTModUtils.Patches
         public static void Postfix(Mech __instance, ref float __result)
         {
             if (SharedState.Combat != null)
-                __result = __instance.ModifiedWalkDistance();
+                __result = __instance.ModifiedWalkDistanceExt(false);
         }
     }
 
@@ -52,7 +52,7 @@ namespace IRBTModUtils.Patches
         public static void Postfix(Mech __instance, ref float __result)
         {
             if (SharedState.Combat != null)
-                __result = __instance.ModifiedRunDistance();
+                __result = __instance.ModifiedRunDistanceExt(false);
         }
     }
 }
