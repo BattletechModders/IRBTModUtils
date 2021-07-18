@@ -6,6 +6,8 @@ namespace IRBTModUtils.Extension
 {
     public static class MechExtensions
     {
+        // Class representing dynamic movement modifiers that are not constant or that require the current state of the mech
+        //   to calculate. These are used in conjunction with MechMoveModifiers to calculate the final walk speeds
         internal class MechMoveDistanceModifier {
           public string name;
           public Func<Mech, float, float> walkMod { get; private set; }
@@ -18,17 +20,21 @@ namespace IRBTModUtils.Extension
             this.priority = priority;
           }
         }
+
         private static List<MechMoveDistanceModifier> extMoveMods = new List<MechMoveDistanceModifier>();
+
         public static void RegisterMoveDistanceModifier(string id, int priority, Func<Mech, float, float> walkmod, Func<Mech, float, float> runmod) {
           extMoveMods.Add(new MechMoveDistanceModifier(id, walkmod, runmod, priority));
           extMoveMods.Sort((x, y) => x.priority.CompareTo(y.priority));
         }
+
         public static float ModifiedWalkDistance(this Mech mech) {
           return ModifiedWalkDistanceExt(mech, true);
         }
         public static float ModifiedRunDistance(this Mech mech) {
           return ModifiedRunDistanceExt(mech, true);
         }
+
         public static float ModifiedWalkDistanceExt(this Mech mech, bool skipExternalAll, params string[] without)
         {
             Mod.Log.Info?.Write($"ModifiedWalkDistance for: {mech.DistinctId()} extMods: {extMoveMods.Count}");
