@@ -69,6 +69,7 @@
     <Compile Include="CustomInfluenceMap\InfluenceMapFactorsToRemove.cs" />
     <Compile Include="Extension\MechExtensions.cs" />
     <Compile Include="Extension\MechMoveModifier.cs" />
+    <Compile Include="Logging\ModLogWriter.cs" />
     <Compile Include="Logging\DeferringLogger.cs" />
     <Compile Include="Patches\MechPatches.cs" />
     <Compile Include="SharedState.cs" />
