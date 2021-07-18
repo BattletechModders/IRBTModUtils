@@ -10,11 +10,18 @@ namespace IRBTModUtils {
         public static CombatGameState Combat = null;
         public static CombatHUD CombatHUD = null;
         public static Dictionary<ICombatant, string> CombatantLabels = new Dictionary<ICombatant, string>();
+        public static Dictionary<string, float> MechSpeedCache = new Dictionary<string, float>();
 
-        public static void Reset() {
+        public static void ResetAll() {
+            ResetOnCombatEnd();
+        }
+
+        public static void ResetOnCombatEnd()
+        {
             Combat = null;
             CombatHUD = null;
             CombatantLabels.Clear();
+            MechSpeedCache.Clear();
         }
     }
 
