@@ -11,7 +11,7 @@ namespace IRBTModUtils.Patches
      */
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxWalkDistance", MethodType.Getter)]
-    [HarmonyAfter("io.mission.customunits")]
+    [HarmonyBefore("io.mission.customunits")]
     public static class Mech_MaxWalkDistance_Get
     {
         static bool Prepare() => Mod.Config.Features.EnableMovementModifiers;
@@ -25,7 +25,7 @@ namespace IRBTModUtils.Patches
 
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxBackwardDistance", MethodType.Getter)]
-    [HarmonyAfter("io.mission.customunits")]
+    [HarmonyBefore("io.mission.customunits")]
     public static class Mech_MaxBackwardDistance_Get
     {
         static bool Prepare() => Mod.Config.Features.EnableMovementModifiers;
@@ -39,7 +39,7 @@ namespace IRBTModUtils.Patches
 
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxSprintDistance", MethodType.Getter)]
-    [HarmonyAfter("io.mission.customunits")]
+    [HarmonyBefore("io.mission.customunits")]
     public static class Mech_MaxSprintDistance_Get
     {
         static bool Prepare() => Mod.Config.Features.EnableMovementModifiers;
