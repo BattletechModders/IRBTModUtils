@@ -14,7 +14,7 @@ Other mods may want to reference these values directly. To do so, simply import 
 
 This mod sets a minimum move distance, expressed as `Settings.MinimumMove` in `mod.json`. If the sum of all modifiers reduces the walk or run distance below this value, it will be returned instead.
 
-This feature patches several methods. If you'd like to disable it entirely, set `Settings.Features.EnableMovementModifers` to false in `mod.json`. 
+This feature patches several methods. If you'd like to disable it entirely, set `Settings.Features.EnableMovementModifers` to false in `mod.json`.
 
 ## Custom Dialog
 
@@ -25,18 +25,22 @@ Loreum ipsum
 The AI logic in HBS BT uses a Decision Tree approach, a series of nodes that return a success or failure to determine what actions it should take. As part of choosing where to move, the AI calculates a discrete value for each position through an Influence Map. The InfluenceMap can be supplied with various factors which analyze the game state and return a multiplier and a weight. The combination of multiplier and weight determine how strongly the AI should emphasize that position, in conjunction with all the other factors. Decompile the `InfluenceMapEvaluator` constructor to see all of the vanilla factors that get applied.
 
 If a mod wants to add their own custom InfluenceMap they can do so by implementing one of the following abstract classes. These factors will be injected to the InfluenceMap by the mod [CleverGirl](https://github.com/battletechmodders/clevergirl/), and applied as if they were normal factors.
-  
+
 By default HBS factors rely upon the `BehaviorVariable` enum. Factors return the behavior var name, and the InfluenceMap pulls the value using that name. This enum was never upgraded to a data-driven enum, so we cannot customize values or supply new ones. Instead each custom factor must return the weight directly through the `GetRegularMoveWeight` and `GetSprintMoveWeight` methods.
 
 * CustomInfluenceMapAllyFactor: These factors should apply based upon the number of friendly actors (allies) around the target. Typically you should limit yourself to 2-4 to prevent the calculation time from being excessive.
 * CustomInfluenceMapHostileFactor: These factors should apply based upon the presence of enemies.
 * CustomInfluenceMapPositionFactor: These factors apply based on any factor relevant to the position itself.
 
-In practice the distinction between these three values is heavily blurred. 
+In practice the distinction between these three values is heavily blurred.
 
 ### Removing Vanilla Values
 
 You may find it desirable to remove some vanilla factors. To do so, implement a subclass of the `InfluenceMapFactorsToRemove` class. Return a static list of ally, hostile, and position factors that should be removed. These will be eliminated by CleverGirl at startup.
+
+## "RESULT" mission objectives
+
+IRBTModUtils extends the after action report with support for RESULTS, "objectives" that the player neither succeeded nor failed at. When adding results to the After Action Report, objectives with the status `ObjectiveStatus.Ignored` will be displayed as gold RESULTs rather than green SUCCESSFUL or red FAILED objectives.
 
 ## Deferring Logger
 
