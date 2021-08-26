@@ -45,8 +45,7 @@ namespace us.frostraptor.modUtils {
     {
         public static void Prefix() 
         {
-            SharedState.Combat = null;
-            SharedState.CombatantLabels.Clear();
+            SharedState.ResetOnCombatEnd();
         }
     }
 }

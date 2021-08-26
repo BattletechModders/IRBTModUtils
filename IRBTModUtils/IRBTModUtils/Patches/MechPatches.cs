@@ -1,11 +1,6 @@
 ﻿using BattleTech;
 using Harmony;
 using IRBTModUtils.Extension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IRBTModUtils.Patches
 {
@@ -16,7 +11,7 @@ namespace IRBTModUtils.Patches
      */
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxWalkDistance", MethodType.Getter)]
-    [HarmonyAfter("io.mission.customunits")]
+    [HarmonyBefore("io.mission.customunits")]
     public static class Mech_MaxWalkDistance_Get
     {
         static bool Prepare() => Mod.Config.Features.EnableMovementModifiers;
@@ -30,7 +25,7 @@ namespace IRBTModUtils.Patches
 
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxBackwardDistance", MethodType.Getter)]
-    [HarmonyAfter("io.mission.customunits")]
+    [HarmonyBefore("io.mission.customunits")]
     public static class Mech_MaxBackwardDistance_Get
     {
         static bool Prepare() => Mod.Config.Features.EnableMovementModifiers;
@@ -44,7 +39,7 @@ namespace IRBTModUtils.Patches
 
     [HarmonyPatch(typeof(Mech))]
     [HarmonyPatch("MaxSprintDistance", MethodType.Getter)]
-    [HarmonyAfter("io.mission.customunits")]
+    [HarmonyBefore("io.mission.customunits")]
     public static class Mech_MaxSprintDistance_Get
     {
         static bool Prepare() => Mod.Config.Features.EnableMovementModifiers;

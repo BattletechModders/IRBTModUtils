@@ -39,6 +39,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Newtonsoft.Json.dll</HintPath>
@@ -69,11 +73,13 @@
     <Compile Include="CustomInfluenceMap\InfluenceMapFactorsToRemove.cs" />
     <Compile Include="Extension\MechExtensions.cs" />
     <Compile Include="Extension\MechMoveModifier.cs" />
+    <Compile Include="Logging\ModLogWriter.cs" />
     <Compile Include="Logging\DeferringLogger.cs" />
     <Compile Include="Patches\MechPatches.cs" />
     <Compile Include="SharedState.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
     <Compile Include="Patches\CombatHUDPatches.cs" />
+    <Compile Include="Patches\BattletechUIPatches.cs" />
     <Compile Include="Extension\CombatantExtensions.cs" />
     <Compile Include="ModState.cs" />
     <Compile Include="ModConfig.cs" />
@@ -106,9 +112,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist "$(BattleTechGame)\Mods\IRBTModUtils" ( 
-xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGame)\Mods\IRBTModUtils" /y
-)
-</PostBuildEvent>
+    <PostBuildEvent>if exist "$(BattleTechGame)\Mods\IRBTModUtils" (
+      xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGame)\Mods\IRBTModUtils" /y
+    )</PostBuildEvent>
   </PropertyGroup>
 </Project>
