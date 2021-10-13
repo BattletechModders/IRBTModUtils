@@ -29,35 +29,30 @@ namespace IRBTModUtils
         {
             ModDir = modDirectory;
 
-            Exception settingsE = null;
+            Exception configE;
             try
             {
                 Mod.Config = JsonConvert.DeserializeObject<ModConfig>(settingsJSON);
             }
             catch (Exception e)
             {
-                settingsE = e;
+                configE = e;
                 Mod.Config = new ModConfig();
+            }
+            finally
+            {
+                Mod.Config.Init();
             }
 
             Log = new DeferringLogger(modDirectory, LogName, Config.Debug, Config.Trace);
-
-            Assembly asm = Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
-            Log.Info?.Write($"Assembly version: {fvi.ProductVersion}");
 
             Log.Debug?.Write($"ModDir is:{modDirectory}");
             Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
             Mod.Config.LogConfig();
 
-            if (settingsE != null)
-            {
-                Log.Info?.Write($"ERROR reading settings file! Error was: {settingsE}");
-            }
-            else
-            {
-                Log.Info?.Write($"INFO: No errors reading settings file.");
-            }
+            Assembly asm = Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
+            Log.Info?.Write($"Assembly version: {fvi.ProductVersion}");
 
             // Try to determine the battletech directory
             string fileName = Process.GetCurrentProcess().MainModule.FileName;

@@ -1,4 +1,5 @@
 ﻿using BattleTech;
+using IRBTModUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,23 +8,40 @@ namespace us.frostraptor.modUtils {
 
     public class SkillUtils {
 
+        // A mapping of skill level to modifier
+        public static readonly Dictionary<int, int> LegacyModsBySkill = new Dictionary<int, int> {
+            { 1, 0 },
+            { 2, 1 },
+            { 3, 1 },
+            { 4, 2 },
+            { 5, 2 },
+            { 6, 3 },
+            { 7, 3 },
+            { 8, 4 },
+            { 9, 4 },
+            { 10, 5 },
+            { 11, 6 },
+            { 12, 7 },
+            { 13, 8 }
+        };
+
         private const string TOOLTIP_GREEN = "#00FF00";
         private const string TOOLTIP_RED = "#FF0000";
 
         public static int GetGunneryModifier(Pilot pilot) {
-            return GetModifier(pilot, pilot.Gunnery, "AbilityDefG5", "AbilityDefG8");
+            return GetModifier(pilot, pilot.Gunnery, Mod.Config.SkillsToModifiers.Gunnery);
         }
 
         public static int GetGutsModifier(Pilot pilot) {
-            return GetModifier(pilot, pilot.Guts, "AbilityDefGu5", "AbilityDefGu8");
+            return GetModifier(pilot, pilot.Guts, Mod.Config.SkillsToModifiers.Guts);
         }
 
         public static int GetPilotingModifier(Pilot pilot) {
-            return GetModifier(pilot, pilot.Piloting, "AbilityDefP5", "AbilityDefP8");
+            return GetModifier(pilot, pilot.Piloting, Mod.Config.SkillsToModifiers.Piloting);
         }
 
         public static int GetTacticsModifier(Pilot pilot) {
-            return GetModifier(pilot, pilot.Tactics, "AbilityDefT5A", "AbilityDefT8A");
+            return GetModifier(pilot, pilot.Tactics, Mod.Config.SkillsToModifiers.Tactics);
         }
 
         // Process any tags that provide flat bonuses
@@ -89,23 +107,7 @@ namespace us.frostraptor.modUtils {
 
         // --- PRIVATE BELOW ---
 
-        // A mapping of skill level to modifier
-        private static readonly Dictionary<int, int> ModifierBySkill = new Dictionary<int, int> {
-            { 1, 0 },
-            { 2, 1 },
-            { 3, 1 },
-            { 4, 2 },
-            { 5, 2 },
-            { 6, 3 },
-            { 7, 3 },
-            { 8, 4 },
-            { 9, 4 },
-            { 10, 5 },
-            { 11, 6 },
-            { 12, 7 },
-            { 13, 8 }
-        };
-
+        [Obsolete("Please use GetModifier instead")]
         public static int NormalizeSkill(int rawValue) {
             int normalizedVal = rawValue;
             if (rawValue >= 11 && rawValue <= 14) {
@@ -127,17 +129,45 @@ namespace us.frostraptor.modUtils {
 
         // Legacy implementation, assumes the modifier spread in RT
         private static int GetModifier(Pilot pilot, int skillValue, string abilityDefIdL5, string abilityDefIdL8) {
-            return GetModifier(pilot, skillValue, ModifierBySkill, new List<string>() { abilityDefIdL5, abilityDefIdL8 }, 1);
+            return GetModifier(pilot, skillValue, LegacyModsBySkill, new List<string>() { abilityDefIdL5, abilityDefIdL8 }, 1);
+        }
+
+        public static int GetModifier(Pilot pilot, int skillValue, SkillModConfig skillModConfig)
+        {
+            if (pilot == null) return 0;
+            Mod.Log.Debug?.Write($"Calculating modifier for pilot: {pilot.Name}_{pilot.GUID}");
+
+            skillModConfig.RatingToModifier.TryGetValue(skillValue, out int modifier);
+            Mod.Log.Debug?.Write($"  modifier: {modifier} from skillValue: {skillValue}");
+
+            int abilityMod = 0;
+            if (skillModConfig.ModifierBonusAbilities != null && skillModConfig.ModifierBonusAbilities.Count > 0)
+            {
+                int matchedAbilities = MatchedAbilities(pilot, skillModConfig.ModifierBonusAbilities);
+                abilityMod = (int)Math.Ceiling(matchedAbilities * skillModConfig.BonusMultiplier);
+                Mod.Log.Debug?.Write($"  matchedAbilityCount: {matchedAbilities} x abilityMulti: {skillModConfig.BonusMultiplier} = {abilityMod}");
+            }
+
+            return modifier + abilityMod;
         }
 
         // Customizable modifier spread as per BD's request
-        public static int GetModifier(Pilot pilot, int skillValue, Dictionary<int, int> modifiersForSkill, List<string> abilityDefIds, float abilityMulti = 1f)
+        public static int GetModifier(Pilot pilot, int skillValue, Dictionary<int, int> modifiersForSkill, 
+            List<string> abilityDefIds, float abilityMulti = 1f)
         {
-            int normalizedVal = NormalizeSkill(skillValue);
-            int modifier = modifiersForSkill[normalizedVal];
+            if (pilot == null) return 0;
+            Mod.Log.Debug?.Write($"Calculating modifier for pilot: {pilot.Name}_{pilot.GUID}");
 
-            int matchedAbilities = MatchedAbilities(pilot, abilityDefIds);
-            int abilityMod = (int)Math.Ceiling(matchedAbilities * abilityMulti);
+            modifiersForSkill.TryGetValue(skillValue, out int modifier);
+            Mod.Log.Debug?.Write($"  modifier: {modifier} from skillValue: {skillValue}");
+
+            int abilityMod = 0;
+            if (abilityDefIds != null && abilityDefIds.Count > 0)
+            {
+                int matchedAbilities = MatchedAbilities(pilot, abilityDefIds);
+                abilityMod = (int)Math.Ceiling(matchedAbilities * abilityMulti);
+                Mod.Log.Debug?.Write($"  matchedAbilityCount: {matchedAbilities} x abilityMulti: {abilityMulti} = {abilityMod}");
+            }
 
             return modifier + abilityMod;
         }
