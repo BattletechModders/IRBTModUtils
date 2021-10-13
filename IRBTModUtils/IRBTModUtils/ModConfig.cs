@@ -91,35 +91,39 @@ namespace IRBTModUtils {
 
             foreach (KeyValuePair<int, int> kvp in this.SkillsToModifiers.Gunnery.RatingToModifier)
             {
-                ratToModSB.Append($"{kvp.Key}={kvp.Value}");
+                ratToModSB.Append($"s{kvp.Key}=>{kvp.Value},");
             }
             Mod.Log.Info?.Write($"Gunnery => ratings: {ratToModSB}");
             Mod.Log.Info?.Write($"  bonus abilities => multiplier: {this.SkillsToModifiers.Gunnery.BonusMultiplier}  " +
                 $"abilities: {string.Join(",", this.SkillsToModifiers.Gunnery.ModifierBonusAbilities)}");
+            Mod.Log.Info?.Write("");
 
             foreach (KeyValuePair<int, int> kvp in this.SkillsToModifiers.Guts.RatingToModifier)
             {
-                ratToModSB.Append($"{kvp.Key}={kvp.Value}");
+                ratToModSB.Append($"s{kvp.Key}=>{kvp.Value},");
             }
             Mod.Log.Info?.Write($"Guts => ratings: {ratToModSB}");
             Mod.Log.Info?.Write($"  bonus abilities => multiplier: {this.SkillsToModifiers.Guts.BonusMultiplier}  " +
                 $"abilities: {string.Join(",", this.SkillsToModifiers.Guts.ModifierBonusAbilities)}");
+            Mod.Log.Info?.Write("");
 
             foreach (KeyValuePair<int, int> kvp in this.SkillsToModifiers.Piloting.RatingToModifier)
             {
-                ratToModSB.Append($"{kvp.Key}={kvp.Value}");
+                ratToModSB.Append($"s{kvp.Key}=>{kvp.Value},");
             }
             Mod.Log.Info?.Write($"Piloting => ratings: {ratToModSB}");
             Mod.Log.Info?.Write($"  bonus abilities => multiplier: {this.SkillsToModifiers.Piloting.BonusMultiplier}  " +
                 $"abilities: {string.Join(",", this.SkillsToModifiers.Piloting.ModifierBonusAbilities)}");
+            Mod.Log.Info?.Write("");
 
             foreach (KeyValuePair<int, int> kvp in this.SkillsToModifiers.Tactics.RatingToModifier)
             {
-                ratToModSB.Append($"{kvp.Key}={kvp.Value}");
+                ratToModSB.Append($"s{kvp.Key}=>{kvp.Value},");
             }
             Mod.Log.Info?.Write($"Tactics => ratings: {ratToModSB}");
             Mod.Log.Info?.Write($"  bonus abilities => multiplier: {this.SkillsToModifiers.Tactics.BonusMultiplier}  " +
                 $"abilities: {string.Join(",", this.SkillsToModifiers.Tactics.ModifierBonusAbilities)}");
+            Mod.Log.Info?.Write("");
 
             Mod.Log.Info?.Write("");
 
