@@ -90,15 +90,46 @@ namespace IRBTModUtils
                 ModState.MoveModifiers.Add(instance);
             }
         }
+        private static bool CheckBlockList(Assembly assembly) {
+          foreach (string name in Mod.Config.BlockedDlls) { if (assembly.FullName.StartsWith(name)) { return true; } }
+          return false;
+        }
 
         private static IEnumerable<Type> GetAllTypesThatImplementInterface<T>()
         {
             var targetType = typeof(T);
-            return AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.IsDynamic)
-                .SelectMany(s => s.GetTypes())
-                .Where(p => !p.IsInterface && !p.IsAbstract)
-                .Where(p => targetType.IsAssignableFrom(p));
+            List<Type> result = new List<Type>();
+            try { 
+              foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+                if (CheckBlockList(assembly)) { continue; }
+                try {
+                  Type[] types = assembly.GetTypes();
+                  foreach(Type type in types) {
+                    try {
+                      if (type.IsInterface) { continue; }
+                      if (type.IsAbstract) { continue; }
+                      if (targetType.IsAssignableFrom(type) == false) { continue; }
+                      result.Add(type);
+                    }catch(Exception e) {
+                      Mod.Log.Error?.Write(assembly.FullName);
+                      Mod.Log.Error?.Write(type.FullName);
+                      Mod.Log.Error?.Write(e.ToString());
+                    }
+                  }
+                }catch(Exception e) {
+                  Mod.Log.Error?.Write(assembly.FullName);
+                  Mod.Log.Error?.Write(e.ToString());
+                }
+              }
+            }catch(Exception e) {
+              Mod.Log.Error?.Write(e.ToString());
+            }
+            return result;
+            //return AppDomain.CurrentDomain.GetAssemblies()
+            //    .Where(a => !a.IsDynamic)
+            //    .SelectMany(s => s.GetTypes())
+            //    .Where(p => !p.IsInterface && !p.IsAbstract)
+            //    .Where(p => targetType.IsAssignableFrom(p));
         }
     }
 }
