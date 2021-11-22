@@ -67,6 +67,7 @@ namespace IRBTModUtils {
         public DialogueConfig Dialogue = new DialogueConfig();
 
         public SkillToModsConfig SkillsToModifiers = new SkillToModsConfig();
+        public List<string> BlockedDlls = new List<string>();
 
         public void LogConfig() {
             Mod.Log.Info?.Write("=== MOD CONFIG BEGIN ===");
