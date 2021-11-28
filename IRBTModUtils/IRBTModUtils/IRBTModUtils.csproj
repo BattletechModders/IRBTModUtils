@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>IRBTModUtils</RootNamespace>
     <AssemblyName>IRBTModUtils</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -21,6 +21,7 @@
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -33,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>.$(BattleTechGameDir)\BattleTech_Data\mods\HBS\0Harmony.dll</HintPath>
+      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -44,6 +45,7 @@
       <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="Newtonsoft.Json">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Newtonsoft.Json.dll</HintPath>
@@ -73,6 +75,7 @@
     <Compile Include="CustomInfluenceMap\InfluenceMapFactorsToRemove.cs" />
     <Compile Include="Extension\MechExtensions.cs" />
     <Compile Include="Extension\MechMoveModifier.cs" />
+    <Compile Include="Interfaces\CustomMech.cs" />
     <Compile Include="Logging\ModLogWriter.cs" />
     <Compile Include="Logging\DeferringLogger.cs" />
     <Compile Include="Patches\MechPatches.cs" />
@@ -106,11 +109,13 @@
     <Compile Include="Math\HexUtils.cs" />
     <Compile Include="Math\GeometryUtils.cs" />
     <Compile Include="Sorter\Sorters.cs" />
+    <Compile Include="Stack\StackDataHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist "$(BattleTechGame)\Mods\IRBTModUtils" (
-      xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGame)\Mods\IRBTModUtils" /y
+    <PostBuildEvent>echo %25BattleTechGameDir%25
+if exist "$(BattleTechGameDir)\Mods\IRBTModUtils" (
+      xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGameDir)\Mods\IRBTModUtils" /y
     )</PostBuildEvent>
   </PropertyGroup>
 </Project>
