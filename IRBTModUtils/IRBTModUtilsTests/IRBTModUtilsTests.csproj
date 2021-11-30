@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GaussianGeneratorTests.cs" />
+    <Compile Include="MovementTests.cs" />
     <Compile Include="GeometryTests.cs" />
     <Compile Include="HexesTests.cs" />
     <Compile Include="LoggersTest.cs" />

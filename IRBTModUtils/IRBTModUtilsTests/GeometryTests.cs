@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 using UnityEngine;
 using us.frostraptor.modUtils.math;
 
-namespace GeometryTests {
+namespace GeometryTests
+{
 
     [TestClass]
-    public class GeometryTests {
+    public class GeometryTests
+    {
 
         [TestMethod]
-        public void CentroidTest() {
+        public void CentroidTest()
+        {
             List<Vector3> testPositions = new List<Vector3>() {
                 new Vector3(-840f, 133.4f, 23f),
                 new Vector3(-708f, 128.9f, 473.3f),
