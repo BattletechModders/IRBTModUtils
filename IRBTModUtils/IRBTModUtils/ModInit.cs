@@ -104,6 +104,7 @@ namespace IRBTModUtils
             {
                 foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
+                    if (assembly.IsDynamic) { continue; }
                     if (CheckBlockList(assembly)) { continue; }
                     try
                     {
@@ -119,24 +120,22 @@ namespace IRBTModUtils
                             }
                             catch (Exception e)
                             {
-                                Mod.Log.Error?.Write(assembly.FullName);
-                                Mod.Log.Error?.Write(type.FullName);
-                                Mod.Log.Error?.Write(e.ToString());
+                                Mod.Log.Error?.Write(e, $"assembly.FullName: {assembly.FullName}  type.fullName: {type.FullName}");
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        Mod.Log.Error?.Write(assembly.FullName);
-                        Mod.Log.Error?.Write(e.ToString());
+                        Mod.Log.Error?.Write(e, $"assembly.FullName: {assembly.FullName}");
                     }
                 }
             }
             catch (Exception e)
             {
-                Mod.Log.Error?.Write(e.ToString());
+                Mod.Log.Error?.Write(e, "Failed to iterate assemblies to find types!");
             }
             return result;
+
             //return AppDomain.CurrentDomain.GetAssemblies()
             //    .Where(a => !a.IsDynamic)
             //    .SelectMany(s => s.GetTypes())
