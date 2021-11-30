@@ -8,12 +8,13 @@ namespace IRBTModUtils.Extension
     public static class MechExtensions
     {
         // Class representing dynamic movement modifiers that are not constant or that require the current state of the mech
-        //   to calculate. These are used in conjunction with MechMoveModifiers to calculate the final walk speeds
+        //   to calculate. These are used in conjunction with MechMoveModifiers to calculate the final walk and run speeds
         internal class MechMoveDistanceModifier {
           public string name;
           public Func<Mech, float, float> walkMod { get; private set; }
           public Func<Mech, float, float> runMod { get; private set; }
           public int priority { get; private set; }
+
           public MechMoveDistanceModifier(string id, Func<Mech, float, float> walkMod, Func<Mech, float, float> runMod, int priority) {
             this.name = id;
             this.walkMod = walkMod;
@@ -72,7 +73,7 @@ namespace IRBTModUtils.Extension
                 modifiedDist = (float)Math.Ceiling((isRun ? mech.RunSpeed : mech.WalkSpeed) - total);
 
                 // Apply dynamic modifiers to movement
-                if (skipExternalAll == false)
+                if (!skipExternalAll)
                 {
                     // Filter mods that should be excluded from the comparison
                     HashSet<string> skipMods = new HashSet<string>();
@@ -86,10 +87,12 @@ namespace IRBTModUtils.Extension
                         if (extmod.walkMod == null) { continue; }
                         if (skipMods.Contains(extmod.name)) { continue; }
 
-                        Mod.Log.Debug?.Write($" ext modifier: {extmod.name} {modifiedDist}");
+                        float beforeChange = modifiedDist;
                         modifiedDist = isRun ? extmod.runMod(mech, modifiedDist) : extmod.walkMod(mech, modifiedDist);
+                        Mod.Log.Debug?.Write($" ext modifier: {extmod.name} beforeChange: {modifiedDist} afterChange: {modifiedDist}");
                     }
                 }
+
                 // Make comparisons safer
                 modifiedDist = Mathf.RoundToInt(modifiedDist);
 
@@ -103,8 +106,12 @@ namespace IRBTModUtils.Extension
                 if (speedChanged)
                 {
                     Mod.Log.Info?.Write($"{typeLabel} changed for '{mech.DistinctId()}' to {modifiedDist}m from: {(isRun ? mech.RunSpeed : mech.WalkSpeed)}m " +
-                        $"(extModsCount: {extMoveMods.Count} moveModsCount: {ModState.MoveModifiers.Count})");
+                        $"isRun: {isRun} (extModsCount: {extMoveMods.Count} moveModsCount: {ModState.MoveModifiers.Count})");
                     SharedState.MechSpeedCache[cacheKey] = modifiedDist;
+                }
+                else
+                {
+                    Mod.Log.Debug?.Write($" cached speed value unchanged, skipping.");
                 }
             }
             catch (Exception e)
