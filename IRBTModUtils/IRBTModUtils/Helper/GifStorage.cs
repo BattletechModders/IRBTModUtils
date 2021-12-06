@@ -27,6 +27,26 @@ namespace IRBTModUtils {
       }
       return null;
     }
+    public static UniGif.GifImage GetPortraitGifImage(this Pilot pilot) {
+      if (pilot == null) { return null; }
+      if (pilot.pilotDef.PortraitSettings != null) {
+        if (pilot.pilotDef.PortraitSettings.Description != null) {
+          if (string.IsNullOrEmpty(pilot.pilotDef.PortraitSettings.Description.Icon) == false) {
+            if (gifImages.TryGetValue(pilot.pilotDef.PortraitSettings.Description.Icon, out var result)) {
+              return result;
+            }
+          }
+        }
+      }
+      if (pilot.pilotDef.Description != null) {
+        if (string.IsNullOrEmpty(pilot.pilotDef.Description.Icon) == false) {
+          if (gifImages.TryGetValue(pilot.pilotDef.Description.Icon, out var result)) {
+            return result;
+          }
+        }
+      }
+      return null;
+    }
     public static UniGif.GifImage GetDescrGifImage(this BaseDescriptionDef descr) {
       if (string.IsNullOrEmpty(descr.Icon) == false) {
         if (gifImages.TryGetValue(descr.Icon, out var result)) {
