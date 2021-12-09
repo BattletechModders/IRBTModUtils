@@ -1,4 +1,5 @@
-﻿using Harmony;
+﻿using BattleTech;
+using Harmony;
 using IRBTModUtils.Extension;
 using IRBTModUtils.Logging;
 using Newtonsoft.Json;
@@ -9,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using us.frostraptor.modUtils.CustomDialog;
-using us.frostraptor.modUtils.logging;
 
 namespace IRBTModUtils
 {
@@ -79,68 +79,8 @@ namespace IRBTModUtils
         }
 
         // Invoked when ModTek has loaded all mods
-        public static void FinishedLoading()
+        public static void FinishedLoading(List<string> loadOrder, Dictionary<string, Dictionary<string, VersionManifestEntry>> customResources)
         {
-            Mod.Log.Info?.Write($"Checking for UnitMoveModifierTypes in assemblies");
-            // Record custom types from mods
-            foreach (var type in GetAllTypesThatImplementInterface<MechMoveModifier>())
-            {
-                Mod.Log.Info?.Write($"Adding move modifier: {type.FullName}");
-                MechMoveModifier instance = (MechMoveModifier)Activator.CreateInstance(type);
-                ModState.MoveModifiers.Add(instance);
-            }
-        }
-        private static bool CheckBlockList(Assembly assembly)
-        {
-            foreach (string name in Mod.Config.BlockedDlls) { if (assembly.FullName.StartsWith(name)) { return true; } }
-            return false;
-        }
-
-        private static IEnumerable<Type> GetAllTypesThatImplementInterface<T>()
-        {
-            var targetType = typeof(T);
-            List<Type> result = new List<Type>();
-            try
-            {
-                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    if (assembly.IsDynamic) { continue; }
-                    if (CheckBlockList(assembly)) { continue; }
-                    try
-                    {
-                        Type[] types = assembly.GetTypes();
-                        foreach (Type type in types)
-                        {
-                            try
-                            {
-                                if (type.IsInterface) { continue; }
-                                if (type.IsAbstract) { continue; }
-                                if (targetType.IsAssignableFrom(type) == false) { continue; }
-                                result.Add(type);
-                            }
-                            catch (Exception e)
-                            {
-                                Mod.Log.Error?.Write(e, $"assembly.FullName: {assembly.FullName}  type.fullName: {type.FullName}");
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Mod.Log.Error?.Write(e, $"assembly.FullName: {assembly.FullName}");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Mod.Log.Error?.Write(e, "Failed to iterate assemblies to find types!");
-            }
-            return result;
-
-            //return AppDomain.CurrentDomain.GetAssemblies()
-            //    .Where(a => !a.IsDynamic)
-            //    .SelectMany(s => s.GetTypes())
-            //    .Where(p => !p.IsInterface && !p.IsAbstract)
-            //    .Where(p => targetType.IsAssignableFrom(p));
         }
     }
 }

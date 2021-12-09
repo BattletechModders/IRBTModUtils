@@ -1,4 +1,4 @@
-﻿using IRBTModUtils.Extension;
+﻿using IRBTModUtils.Feature;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,13 +10,14 @@ namespace IRBTModUtils {
         public static Queue DialogueQueue = new Queue();
         public static bool IsDialogStackActive = false;
         public static Dictionary<string, Sprite> Portraits = new Dictionary<string, Sprite>();
-        public static List<MechMoveModifier> MoveModifiers = new List<MechMoveModifier>();
+
+        //public static List<MechMoveModifier> MoveModifiers = new List<MechMoveModifier>();
+        internal static List<MechMoveDistanceModifier> ExtMovementMods = new List<MechMoveDistanceModifier>();
 
         public static void Reset() {
             // Reinitialize state
             DialogueQueue.Clear();
-            IsDialogStackActive = false;
-            MoveModifiers.Clear();
+            IsDialogStackActive = false;             
         }
     }
 

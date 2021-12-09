@@ -74,7 +74,7 @@
     <Compile Include="CustomInfluenceMap\CustomInfluenceMapPositionFactor.cs" />
     <Compile Include="CustomInfluenceMap\InfluenceMapFactorsToRemove.cs" />
     <Compile Include="Extension\MechExtensions.cs" />
-    <Compile Include="Extension\MechMoveModifier.cs" />
+    <Compile Include="Feature\MovementMods.cs" />
     <Compile Include="Interfaces\CustomMech.cs" />
     <Compile Include="Logging\ModLogWriter.cs" />
     <Compile Include="Logging\DeferringLogger.cs" />
