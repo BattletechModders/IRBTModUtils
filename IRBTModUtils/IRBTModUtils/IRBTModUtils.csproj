@@ -74,7 +74,14 @@
     <Compile Include="CustomInfluenceMap\CustomInfluenceMapPositionFactor.cs" />
     <Compile Include="CustomInfluenceMap\InfluenceMapFactorsToRemove.cs" />
     <Compile Include="Extension\MechExtensions.cs" />
+    <Compile Include="Extension\MechMoveModifier.cs" />
     <Compile Include="Feature\MovementMods.cs" />
+    <Compile Include="GifSupport\UniGif.cs" />
+    <Compile Include="GifSupport\UniGifConst.cs" />
+    <Compile Include="GifSupport\UniGifDecoder.cs" />
+    <Compile Include="GifSupport\UniGifExtension.cs" />
+    <Compile Include="GifSupport\UniGifFormatter.cs" />
+    <Compile Include="Helper\GifStorage.cs" />
     <Compile Include="Interfaces\CustomMech.cs" />
     <Compile Include="Logging\ModLogWriter.cs" />
     <Compile Include="Logging\DeferringLogger.cs" />
@@ -111,11 +118,29 @@
     <Compile Include="Sorter\Sorters.cs" />
     <Compile Include="Stack\StackDataHelper.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>echo %25BattleTechGameDir%25
+    <PostBuildEvent>if exist "$(BattleTechGameDir)\Mods_CBDE\IRBTModUtils" (
+  echo %25BattleTechGameDir%25
+  copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Mods_CBDE\IRBTModUtils"
+)
 if exist "$(BattleTechGameDir)\Mods\IRBTModUtils" (
-      xcopy "$(TargetDir)$(TargetFileName)" "$(BattleTechGameDir)\Mods\IRBTModUtils" /y
-    )</PostBuildEvent>
+  echo %25BattleTechGameDir%25
+  copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Mods\IRBTModUtils"
+)
+if exist "$(RogueTechRepo)\IRBTModUtils" (
+  echo %25RogueTechRepo%25
+  copy /Y "$(TargetPath)" "$(RogueTechRepo)\IRBTModUtils"
+)
+if exist "$(BTARepo)\IRBTModUtils" (
+  echo %25BTARepo%25
+  copy /Y "$(TargetPath)" "$(BTARepo)\IRBTModUtils"
+)
+if exist "$(BattleTechGameDir)\Release_CAC\CustomBundle\IRBTModUtils" (
+  echo %25BattleTechGameDir%25
+  copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Release_CAC\Release\CustomBundle\IRBTModUtils"
+)
+		</PostBuildEvent>
   </PropertyGroup>
 </Project>
