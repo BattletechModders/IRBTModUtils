@@ -1,4 +1,5 @@
-﻿using IRBTModUtils.Feature;
+﻿using IRBTModUtils.CustomInfluenceMap;
+using IRBTModUtils.Feature;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,8 +12,15 @@ namespace IRBTModUtils {
         public static bool IsDialogStackActive = false;
         public static Dictionary<string, Sprite> Portraits = new Dictionary<string, Sprite>();
 
-        //public static List<MechMoveModifier> MoveModifiers = new List<MechMoveModifier>();
         internal static List<MechMoveDistanceModifier> ExtMovementMods = new List<MechMoveDistanceModifier>();
+
+        internal static List<CustomInfluenceMapAllyFactor> CustomAllyFactors = new List<CustomInfluenceMapAllyFactor>();
+        internal static List<CustomInfluenceMapHostileFactor> CustomHostileFactors = new List<CustomInfluenceMapHostileFactor>();
+        internal static List<CustomInfluenceMapPositionFactor> CustomPositionFactors = new List<CustomInfluenceMapPositionFactor>();
+
+        internal static List<CustomInfluenceMapAllyFactor> RemovedAllyFactors = new List<CustomInfluenceMapAllyFactor>();
+        internal static List<CustomInfluenceMapHostileFactor> RemovedHostileFactors = new List<CustomInfluenceMapHostileFactor>();
+        internal static List<CustomInfluenceMapPositionFactor> RemovedPositionFactors = new List<CustomInfluenceMapPositionFactor>();
 
         public static void Reset() {
             // Reinitialize state

@@ -74,6 +74,7 @@
     <Compile Include="CustomInfluenceMap\CustomInfluenceMapPositionFactor.cs" />
     <Compile Include="CustomInfluenceMap\InfluenceMapFactorsToRemove.cs" />
     <Compile Include="Extension\MechExtensions.cs" />
+    <Compile Include="CustomInfluenceMap\CustomFactors.cs" />
     <Compile Include="Feature\MovementMods.cs" />
     <Compile Include="GifSupport\UniGif.cs" />
     <Compile Include="GifSupport\UniGifConst.cs" />

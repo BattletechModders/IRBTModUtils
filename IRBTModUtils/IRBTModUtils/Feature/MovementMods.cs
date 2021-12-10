@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 namespace IRBTModUtils.Feature
 {
-
     public static class MovementFeature
     {
         public static void RegisterMoveDistanceModifier(string id, int priority, Func<Mech, float, float> walkmod, Func<Mech, float, float> runmod)
