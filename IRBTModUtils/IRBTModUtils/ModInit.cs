@@ -79,7 +79,7 @@ namespace IRBTModUtils
         }
 
         // Invoked when ModTek has loaded all mods
-        public static void FinishedLoading(List<string> loadOrder, Dictionary<string, Dictionary<string, VersionManifestEntry>> customResources)
+        public static void FinishedLoading(List<string> loadOrder)
         {
         }
     }

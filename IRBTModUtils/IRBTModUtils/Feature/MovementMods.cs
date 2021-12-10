@@ -53,7 +53,11 @@ namespace IRBTModUtils.Feature
                 // Make comparisons safer
                 modifiedDist = (float)Math.Ceiling(modifiedDist);
 
-                if (modifiedDist < Mod.Config.MinimumMove) modifiedDist = Mod.Config.MinimumMove;
+                if (modifiedDist < Mod.Config.MinimumMove)
+                {
+                    Mod.Log.Debug?.Write($"  -- calculated move dist: {modifiedDist} < minMove: {Mod.Config.MinimumMove}, returning minMove");
+                    modifiedDist = Mod.Config.MinimumMove;
+                }
 
                 bool speedChanged = true;
                 string cacheKey = mech.DistinctId() + (isRun ? "_r" : "_w");
