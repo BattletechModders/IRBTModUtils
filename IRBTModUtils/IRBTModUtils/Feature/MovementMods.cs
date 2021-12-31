@@ -1,5 +1,6 @@
 ﻿using BattleTech;
 using Harmony;
+using HBS.Collections;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,13 @@ namespace IRBTModUtils.Feature
         internal static float ModifiedDistanceExt(this Mech mech, bool skipExternalAll, bool isRun = false, params string[] extensionsToSkip)
         {
             if (mech == null) { return 0f; }
+
+            TagSet mechTags = mech.GetTags();
+            if (mechTags.Contains(ModTags.ImmobileUnit))
+            {
+                Mod.Log.Debug?.Write($"Mech: {mech.DistinctId()} has tag: '{ModTags.ImmobileUnit}', returning 0 movement.");
+                return 0;
+            }
 
             float modifiedDist = isRun ? mech.RunSpeed : mech.WalkSpeed;
             try

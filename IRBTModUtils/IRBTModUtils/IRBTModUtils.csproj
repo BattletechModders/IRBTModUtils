@@ -85,6 +85,7 @@
     <Compile Include="Interfaces\CustomMech.cs" />
     <Compile Include="Logging\ModLogWriter.cs" />
     <Compile Include="Logging\DeferringLogger.cs" />
+    <Compile Include="ModConsts.cs" />
     <Compile Include="Patches\MechPatches.cs" />
     <Compile Include="SharedState.cs" />
     <Compile Include="Patches\CombatGameStatePatches.cs" />
