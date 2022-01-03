@@ -2,10 +2,8 @@
 using System.Text;
 using us.frostraptor.modUtils;
 
-namespace IRBTModUtils {
-    
-    public class ModStats {
-    }
+namespace IRBTModUtils
+{
 
     public class FeatureState
     {
@@ -53,7 +51,8 @@ namespace IRBTModUtils {
         public SkillModConfig Tactics = new SkillModConfig();
     }
 
-    public class ModConfig {
+    public class ModConfig
+    {
 
         public bool Debug = true;
         public bool Trace = false;
@@ -69,7 +68,8 @@ namespace IRBTModUtils {
         public SkillToModsConfig SkillsToModifiers = new SkillToModsConfig();
         public List<string> BlockedDlls = new List<string>();
 
-        public void LogConfig() {
+        public void LogConfig()
+        {
             Mod.Log.Info?.Write("=== MOD CONFIG BEGIN ===");
             Mod.Log.Info?.Write($"  DEBUG: {this.Debug} Trace: {this.Trace}");
             Mod.Log.Info?.Write("");

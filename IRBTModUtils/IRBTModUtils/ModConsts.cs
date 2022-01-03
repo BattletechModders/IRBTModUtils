@@ -14,4 +14,9 @@ namespace IRBTModUtils
     {
     }
 
+    public class ModStats
+    {
+        public const string ImmobileUnit = "irbtmu_immobile_unit";
+    }
+
 }

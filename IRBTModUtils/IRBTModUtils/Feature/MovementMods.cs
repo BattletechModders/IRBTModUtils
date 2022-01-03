@@ -26,6 +26,13 @@ namespace IRBTModUtils.Feature
                 return 0;
             }
 
+            bool isImmobile = mech.StatCollection.GetValue<bool>(ModStats.ImmobileUnit);
+            if (isImmobile)
+            {
+                Mod.Log.Debug?.Write($"Mech: {mech.DistinctId()} has statistic: '{ModStats.ImmobileUnit}' set to true, returning 0 movement.");
+                return 0;
+            }
+
             float modifiedDist = isRun ? mech.RunSpeed : mech.WalkSpeed;
             try
             {

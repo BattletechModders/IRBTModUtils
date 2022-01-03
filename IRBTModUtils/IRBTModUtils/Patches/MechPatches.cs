@@ -50,4 +50,18 @@ namespace IRBTModUtils.Patches
                 __result = __instance.ModifiedRunDistanceExt(false);
         }
     }
+
+    // Initialize statistics. InitEffectStats is invoked in the middle of the InitStats function, before effects are applied.
+    [HarmonyPatch(typeof(Mech), "InitEffectStats")]
+    public static class Mech_InitEffectStats
+    {
+
+        public static void Postfix(Mech __instance)
+        {
+            Mod.Log.Trace?.Write("M:I entered.");
+
+            // Initialize mod-specific statistics
+            __instance.StatCollection.AddStatistic<bool>(ModStats.ImmobileUnit, false);
+        }
+    }
 }
