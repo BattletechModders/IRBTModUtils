@@ -8,6 +8,7 @@ namespace IRBTModUtils {
     bool isSquad { get; }
     bool isVehicle { get; }
     bool isQuad { get; }
+    string UnitTypeName { get; }
     HashSet<ArmorLocation> GetDFASelfDamageLocations();
     HashSet<ArmorLocation> GetLandmineDamageArmorLocations();
     HashSet<ArmorLocation> GetBurnDamageArmorLocations();
