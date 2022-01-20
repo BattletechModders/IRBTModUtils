@@ -19,5 +19,6 @@ namespace IRBTModUtils {
     ArmorLocation GetAdjacentLocations(ArmorLocation location);
     Dictionary<ArmorLocation, int> GetClusterTable(ArmorLocation originalLocation, Dictionary<ArmorLocation, int> hitTable);
     Dictionary<ArmorLocation, int> GetHitTableCluster(AttackDirection from, ArmorLocation originalLocation);
+    void AddLinkedActor(AbstractActor actor, Vector3 relativePosition, bool keepPosition);
   }
 }
