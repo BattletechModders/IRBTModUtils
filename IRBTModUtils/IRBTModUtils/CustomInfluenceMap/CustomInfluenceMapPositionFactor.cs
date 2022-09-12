@@ -13,7 +13,8 @@ namespace IRBTModUtils.CustomInfluenceMap
 	{
 		public CustomInfluenceMapPositionFactor() { }
 
-		public override string Name => "ALWAYS OVERRIDE ME!";
+        public virtual bool IgnoreFactorNormalization { get; set; }
+        public override string Name => "ALWAYS OVERRIDE ME!";
 
 		// We always return INVALID_UNSET because most custom behaviors will use unique behavior variables or calcluations
 		public override BehaviorVariableName GetRegularMoveWeightBVName() { return BehaviorVariableName.INVALID_UNSET; }

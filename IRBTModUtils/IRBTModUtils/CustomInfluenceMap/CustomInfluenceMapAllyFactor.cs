@@ -13,6 +13,7 @@ namespace IRBTModUtils.CustomInfluenceMap
 	{
 		public CustomInfluenceMapAllyFactor() { }
 
+        public virtual bool IgnoreFactorNormalization { get; set; }
 		public override string Name => "ALWAYS OVERRIDE ME!";
 
 		// We always return INVALID_UNSET because most custom behaviors will use unique behavior variables or calcluations
