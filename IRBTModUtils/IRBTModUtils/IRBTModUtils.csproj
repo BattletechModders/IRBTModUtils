@@ -123,19 +123,18 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist "$(BattleTechGameDir)\Mods_CBDE\IRBTModUtils" (
-  echo %25BattleTechGameDir%25
   copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Mods_CBDE\IRBTModUtils"
 )
 if exist "$(BattleTechGameDir)\Mods\IRBTModUtils" (
-  echo %25BattleTechGameDir%25
   copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Mods\IRBTModUtils"
 )
+if exist "$(BattleTechGameDir)\Mods\Core\IRBTModUtils" (
+  copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Mods\Core\IRBTModUtils"
+)
 if exist "$(RogueTechRepo)\IRBTModUtils" (
-  echo %25RogueTechRepo%25
   copy /Y "$(TargetPath)" "$(RogueTechRepo)\IRBTModUtils"
 )
 if exist "$(BTARepo)\IRBTModUtils" (
-  echo %25BTARepo%25
   copy /Y "$(TargetPath)" "$(BTARepo)\IRBTModUtils"
 )
 if exist "$(BattleTechGameDir)\Release_CAC\CustomBundle\IRBTModUtils" (
