@@ -131,8 +131,8 @@ if exist "$(BattleTechGameDir)\Mods\IRBTModUtils" (
 if exist "$(BattleTechGameDir)\Mods\Core\IRBTModUtils" (
   copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Mods\Core\IRBTModUtils"
 )
-if exist "$(RogueTechRepo)\IRBTModUtils" (
-  copy /Y "$(TargetPath)" "$(RogueTechRepo)\IRBTModUtils"
+if exist "$(RogueTechRepo)\Core\IRBTModUtils" (
+  copy /Y "$(TargetPath)" "$(RogueTechRepo)\Core\IRBTModUtils"
 )
 if exist "$(BTARepo)\IRBTModUtils" (
   copy /Y "$(TargetPath)" "$(BTARepo)\IRBTModUtils"
