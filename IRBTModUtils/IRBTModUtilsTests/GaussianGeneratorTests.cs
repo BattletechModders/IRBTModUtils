@@ -33,8 +33,8 @@ namespace RedzenTests {
             }
 
             List<int> orderedKeys = frequency.OrderByDescending(kvp => kvp.Key)
-                .Select(kvp => kvp.Key)
-                .ToList();            
+                                             .Select(kvp => kvp.Key)
+                                             .ToList();            
             foreach (int key in orderedKeys) {
                 Console.WriteLine($"Value:{key} had frequency:{frequency[key]}");
             }
