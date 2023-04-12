@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using Harmony;
-using IRBTModUtils.Extension;
+﻿using IRBTModUtils.Extension;
 
 namespace IRBTModUtils.Patches
 {
@@ -14,8 +12,10 @@ namespace IRBTModUtils.Patches
     [HarmonyBefore("io.mission.customunits")]
     public static class Mech_MaxWalkDistance_Get
     {
+        [HarmonyPrepare]
         static bool Prepare() => Mod.Config.Features.EnableMovementModifiers;
 
+        [HarmonyPostfix]
         public static void Postfix(Mech __instance, ref float __result)
         {
             if (SharedState.Combat != null)
@@ -28,8 +28,10 @@ namespace IRBTModUtils.Patches
     [HarmonyBefore("io.mission.customunits")]
     public static class Mech_MaxBackwardDistance_Get
     {
+        [HarmonyPrepare]
         static bool Prepare() => Mod.Config.Features.EnableMovementModifiers;
 
+        [HarmonyPostfix]
         public static void Postfix(Mech __instance, ref float __result)
         {
             if (SharedState.Combat != null)
@@ -42,8 +44,10 @@ namespace IRBTModUtils.Patches
     [HarmonyBefore("io.mission.customunits")]
     public static class Mech_MaxSprintDistance_Get
     {
+        [HarmonyPrepare]
         static bool Prepare() => Mod.Config.Features.EnableMovementModifiers;
 
+        [HarmonyPostfix]
         public static void Postfix(Mech __instance, ref float __result)
         {
             if (SharedState.Combat != null)
@@ -55,7 +59,7 @@ namespace IRBTModUtils.Patches
     [HarmonyPatch(typeof(Mech), "InitEffectStats")]
     public static class Mech_InitEffectStats
     {
-
+        [HarmonyPostfix]
         public static void Postfix(Mech __instance)
         {
             Mod.Log.Trace?.Write("M:I entered.");

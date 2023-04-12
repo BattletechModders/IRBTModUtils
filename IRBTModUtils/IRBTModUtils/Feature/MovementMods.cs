@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using Harmony;
-using HBS.Collections;
+﻿using HBS.Collections;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;

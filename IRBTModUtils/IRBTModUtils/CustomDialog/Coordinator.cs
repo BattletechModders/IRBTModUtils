@@ -1,7 +1,5 @@
-﻿using BattleTech;
-using BattleTech.Framework;
+﻿using BattleTech.Framework;
 using BattleTech.UI;
-using Harmony;
 using HBS.Data;
 using IRBTModUtils;
 using System;

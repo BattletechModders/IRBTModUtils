@@ -1,7 +1,4 @@
-﻿using BattleTech;
-using Harmony;
-using IRBTModUtils.Extension;
-using IRBTModUtils.Logging;
+﻿using IRBTModUtils.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,7 +19,7 @@ namespace IRBTModUtils
         public static DeferringLogger Log;
         public static string ModDir;
         public static ModConfig Config;
-
+        
         public static readonly Random Random = new Random();
 
         public static void Init(string modDirectory, string settingsJSON)
@@ -74,8 +71,7 @@ namespace IRBTModUtils
                 Mod.Log.Debug?.Write($"Callsign count is: {Coordinator.CallSigns.Count}");
             }
 
-            var harmony = HarmonyInstance.Create(HarmonyPackage);
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), HarmonyPackage);
         }
 
         // Invoked when ModTek has loaded all mods

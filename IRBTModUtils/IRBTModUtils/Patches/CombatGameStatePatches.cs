@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using Harmony;
-using IRBTModUtils;
+﻿using IRBTModUtils;
 using System;
 using System.IO;
 using UnityEngine;
@@ -12,6 +10,7 @@ namespace us.frostraptor.modUtils {
     [HarmonyPatch(new Type[] { typeof(GameInstance), typeof(Contract), typeof(string) })]
     public static class CombatGameState__Init
     {
+        [HarmonyPostfix]
         public static void Postfix(CombatGameState __instance) 
         {
             SharedState.Combat = __instance;
@@ -43,7 +42,8 @@ namespace us.frostraptor.modUtils {
     [HarmonyPatch(typeof(CombatGameState), "OnCombatGameDestroyed")]
     public static class CombatGameState_OnCombatGameDestroyed
     {
-        public static void Prefix() 
+        [HarmonyPrefix]
+        public static void Prefix(ref bool __runOriginal) 
         {
             SharedState.ResetOnCombatEnd();
         }
