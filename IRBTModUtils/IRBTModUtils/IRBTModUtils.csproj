@@ -35,26 +35,30 @@
   </PropertyGroup>
 
   <Target Name="AfterBuildMigrated" AfterTargets="CopyFilesToOutputDirectory">
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods\Core\IRBTModUtils" 
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods\Core\IRBTModUtils"
           Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods\Core\IRBTModUtils')" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods_CBDE\Core\IRBTModUtils" 
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods_CBDE\Core\IRBTModUtils"
           Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods_CBDE\Core\IRBTModUtils')" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RogueTechRepo)\Core\IRBTModUtils" 
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RogueTechRepo)\Core\IRBTModUtils"
           Condition="'$(RogueTechRepo)' != '' And Exists('$(RogueTechRepo)\Core\IRBTModUtils')" />
   </Target>
 
+  <PropertyGroup>
+    <!-- avoids IgnoresAccessChecksToAttribute warnings -->
+    <PublicizerRuntimeStrategies>Unsafe</PublicizerRuntimeStrategies>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.0">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </PackageReference>
-    
+    <PackageReference Include="Krafs.Publicizer" Version="2.2.1" />
+    <Publicize Include="Assembly-CSharp;UnityEngine.UI" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="HarmonyX" Version="2.10.1">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
 
-    <Reference Include="Assembly-CSharp" Publicize="true">
+    <Reference Include="Assembly-CSharp">
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
@@ -63,12 +67,14 @@
     <Reference Include="Newtonsoft.Json">
       <Private>False</Private>
     </Reference>
+    
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Core">
       <Private>False</Private>
     </Reference>
+    
     <Reference Include="Unity.TextMeshPro">
       <Private>False</Private>
     </Reference>
