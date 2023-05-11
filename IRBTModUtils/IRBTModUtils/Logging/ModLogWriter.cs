@@ -35,7 +35,7 @@ namespace IRBTModUtils.Logging
         public void Write(string message)
         {
             // Write our internal log
-            string now = DateTime.UtcNow.ToString("HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
+            string now = DateTime.UtcNow.ToString("HH:mm:ss.ffff", System.Globalization.CultureInfo.InvariantCulture);
             LogStream.WriteLine(now + " " + message);
             LogStream.Flush();
 
@@ -49,7 +49,7 @@ namespace IRBTModUtils.Logging
         public void Write(Exception e, string message = null)
         {
             // Write our internal log
-            string now = DateTime.UtcNow.ToString("HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
+            string now = DateTime.UtcNow.ToString("HH:mm:ss.ffff", System.Globalization.CultureInfo.InvariantCulture);
             if (message != null) LogStream.WriteLine(now + " " + message);
             LogStream.WriteLine(now + " " + e?.Message);
             LogStream.WriteLine(now + " " + e?.StackTrace);

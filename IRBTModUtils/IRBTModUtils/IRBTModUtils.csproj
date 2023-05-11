@@ -35,6 +35,8 @@
   </PropertyGroup>
 
   <Target Name="AfterBuildMigrated" AfterTargets="CopyFilesToOutputDirectory">
+  <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods\IRBTModUtils"
+          Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods\IRBTModUtils')" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods\Core\IRBTModUtils"
           Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods\Core\IRBTModUtils')" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods_CBDE\Core\IRBTModUtils"

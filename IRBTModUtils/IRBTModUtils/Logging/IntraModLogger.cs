@@ -93,7 +93,7 @@ namespace us.frostraptor.modUtils.logging
 
         public void Log(string message)
         {
-            string now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
+            string now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffff", System.Globalization.CultureInfo.InvariantCulture);
             LogStream.WriteLine($"{now} - {message}");
             LogStream.Flush();
         }
