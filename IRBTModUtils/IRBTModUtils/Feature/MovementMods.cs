@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using Harmony;
-using HBS.Collections;
+﻿using HBS.Collections;
 using IRBTModUtils.Extension;
 using System;
 using System.Collections.Generic;
@@ -39,8 +37,7 @@ namespace IRBTModUtils.Feature
                 string typeLabel = isRun ? "ModifiedRunDistance" : "ModifiedWalkDistance";
                 Mod.Log.Debug?.Write($"Calc {typeLabel} for: {mech.DistinctId()} (extModsCount: {ModState.ExtMovementMods.Count})");
 
-                Traverse<float> moveMultiplierT = Traverse.Create(mech).Property<float>("MoveMultiplier");
-                float baseMoveMulti = moveMultiplierT != null ? moveMultiplierT.Value : 1f;
+                float baseMoveMulti = mech.MoveMultiplier;
                 modifiedDist *= baseMoveMulti;
                 Mod.Log.Debug?.Write($"  -- stat 'MoveMultiplier' = {baseMoveMulti} => modifiedDist: {modifiedDist}");
 

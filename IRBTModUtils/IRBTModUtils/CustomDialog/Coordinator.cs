@@ -1,7 +1,5 @@
-﻿using BattleTech;
-using BattleTech.Framework;
+﻿using BattleTech.Framework;
 using BattleTech.UI;
-using Harmony;
 using HBS.Data;
 using IRBTModUtils;
 using System;
@@ -193,15 +191,13 @@ namespace us.frostraptor.modUtils.CustomDialog {
                 DialogCameraDistance.Medium, DialogCameraHeight.Default, 0);
             
             // ContractInitialize normally sets the castDef on the content... no need, since we have the actual ref
-            Traverse castDefT = Traverse.Create(content).Field("castDef");
-            castDefT.SetValue(castDef);
+            content.castDef = castDef;
 
             // Initialize the active contract's team settings
             ApplyCastDef(content);
             
             // Load the default emote portrait
-            Traverse dialogueSpriteCacheT = Traverse.Create(content).Field("dialogueSpriteCache");
-            Dictionary<string, Sprite> dialogueSpriteCache = dialogueSpriteCacheT.GetValue<Dictionary<string, Sprite>>();
+            Dictionary<string, Sprite> dialogueSpriteCache = DialogueContent.dialogueSpriteCache;
             Mod.Log.Debug?.Write($"Populating dialogueContent with sprite from path: {castDef.defaultEmotePortrait.portraitAssetPath}");
             dialogueSpriteCache[castDef.defaultEmotePortrait.portraitAssetPath] = ModState.Portraits[castDef.defaultEmotePortrait.portraitAssetPath];
 

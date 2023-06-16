@@ -1,146 +1,98 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Target Name="ValidateBattleTechGameDir" Condition="'$(BattleTechGameDir)' == '' Or !Exists('$(BattleTechGameDir)')">
+    <Error Text="BattleTechGameDir variable not set properly" />
+  </Target>
+
+  <PropertyGroup Condition="'$(DeployedModPath)' == '' And Exists('$(BattleTechGameDir)\Mods\Core\IRBTModUtils')">
+    <!-- Modpack -->
+    <DeployedModPath>$(BattleTechGameDir)\Mods\Core\IRBTModUtils</DeployedModPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(DeployedModPath)' == '' And Exists('$(BattleTechGameDir)\Mods\IRBTModUtils')">
+    <!-- flat dir -->
+    <DeployedModPath>$(BattleTechGameDir)\Mods\IRBTModUtils</DeployedModPath>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8D8489AF-15CB-44E9-879A-97A2131F3B03}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>IRBTModUtils</RootNamespace>
-    <AssemblyName>IRBTModUtils</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblySearchPaths>
+      $(ReferencePath);
+      {HintPathFromItem};
+      $(BattleTechGameDir)\BattleTech_Data\Managed
+    </AssemblySearchPaths>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <DebugType>none</DebugType>
+    <AssemblyTitle>IRBTModUtils</AssemblyTitle>
+    <Product>IRBTModUtils</Product>
+    <Copyright>Copyright © 2023</Copyright>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <LangVersion>11</LangVersion>
+    
+    <!-- Necessary for the Xoshiro random code -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
+
+  <Target Name="AfterBuildMigrated" AfterTargets="CopyFilesToOutputDirectory">
+  <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods\IRBTModUtils"
+          Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods\IRBTModUtils')" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods\Core\IRBTModUtils"
+          Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods\Core\IRBTModUtils')" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BattleTechGameDir)\Mods_CBDE\Core\IRBTModUtils"
+          Condition="'$(BattleTechGameDir)' != '' And Exists('$(BattleTechGameDir)\Mods_CBDE\Core\IRBTModUtils')" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RogueTechRepo)\Core\IRBTModUtils"
+          Condition="'$(RogueTechRepo)' != '' And Exists('$(RogueTechRepo)\Core\IRBTModUtils')" />
+  </Target>
+
+  <PropertyGroup>
+    <!-- avoids IgnoresAccessChecksToAttribute warnings -->
+    <PublicizerRuntimeStrategies>Unsafe</PublicizerRuntimeStrategies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\0Harmony.dll</HintPath>
+    <PackageReference Include="Krafs.Publicizer" Version="2.2.1" />
+    <Publicize Include="Assembly-CSharp;UnityEngine.UI" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HarmonyX" Version="2.10.1">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+
+    <Reference Include="Assembly-CSharp">
+      <Private>False</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Assembly-CSharp.dll</HintPath>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <Private>False</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="Newtonsoft.Json">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
     </Reference>
+    
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Private>False</Private>
+    </Reference>
+    
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine">
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>$(BattleTechGameDir)\BattleTech_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="CustomDialog\Coordinator.cs" />
-    <Compile Include="CustomDialog\CustomDialogMessage.cs" />
-    <Compile Include="CustomDialog\CustomDialogSequence.cs" />
-    <Compile Include="CustomDialog\MessageTypes.cs" />
-    <Compile Include="CustomInfluenceMap\CustomInfluenceMapAllyFactor.cs" />
-    <Compile Include="CustomInfluenceMap\CustomInfluenceMapHostileFactor.cs" />
-    <Compile Include="CustomInfluenceMap\CustomInfluenceMapPositionFactor.cs" />
-    <Compile Include="CustomInfluenceMap\InfluenceMapFactorsToRemove.cs" />
-    <Compile Include="Extension\MechExtensions.cs" />
-    <Compile Include="CustomInfluenceMap\CustomFactors.cs" />
-    <Compile Include="Feature\MovementMods.cs" />
-    <Compile Include="GifSupport\UniGif.cs" />
-    <Compile Include="GifSupport\UniGifConst.cs" />
-    <Compile Include="GifSupport\UniGifDecoder.cs" />
-    <Compile Include="GifSupport\UniGifExtension.cs" />
-    <Compile Include="GifSupport\UniGifFormatter.cs" />
-    <Compile Include="Helper\GifStorage.cs" />
-    <Compile Include="Interfaces\CustomMech.cs" />
-    <Compile Include="Logging\ModLogWriter.cs" />
-    <Compile Include="Logging\DeferringLogger.cs" />
-    <Compile Include="ModConsts.cs" />
-    <Compile Include="Patches\MechPatches.cs" />
-    <Compile Include="SharedState.cs" />
-    <Compile Include="Patches\CombatGameStatePatches.cs" />
-    <Compile Include="Patches\CombatHUDPatches.cs" />
-    <Compile Include="Patches\BattletechUIPatches.cs" />
-    <Compile Include="Extension\CombatantExtensions.cs" />
-    <Compile Include="ModState.cs" />
-    <Compile Include="ModConfig.cs" />
-    <Compile Include="ModInit.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Redzen\BitwiseUtils.cs" />
-    <Compile Include="Redzen\DefaultRandomSeedSource.cs" />
-    <Compile Include="Redzen\IRandomSeedSource.cs" />
-    <Compile Include="Redzen\IRandomSource.cs" />
-    <Compile Include="Redzen\IRandomSourceBuilder.cs" />
-    <Compile Include="Redzen\MathUtils.cs" />
-    <Compile Include="Redzen\RandomDefaults.cs" />
-    <Compile Include="Redzen\RandomSourceBase.cs" />
-    <Compile Include="Redzen\Splitmix64Rng.cs" />
-    <Compile Include="Redzen\Xoshiro256PlusRandom.cs" />
-    <Compile Include="Redzen\Xoshiro256PlusRandomBuilder.cs" />
-    <Compile Include="Redzen\Xoshiro256StarStarRandom.cs" />
-    <Compile Include="Redzen\Xoshiro256StarStarRandomBuilder.cs" />
-    <Compile Include="Redzen\ZigguratGaussian.cs" />
-    <Compile Include="Helper\CombatantUtils.cs" />
-    <Compile Include="Helper\HostilityUtils.cs" />
-    <Compile Include="Helper\SkillUtils.cs" />
-    <Compile Include="Logging\IntraModLogger.cs" />
-    <Compile Include="Math\HexUtils.cs" />
-    <Compile Include="Math\GeometryUtils.cs" />
-    <Compile Include="Sorter\Sorters.cs" />
-    <Compile Include="Stack\StackDataHelper.cs" />
+    <Compile Remove="Logging\ModConfig.cs" />
+    <Compile Remove="Logging\State.cs" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if exist "$(BattleTechGameDir)\Mods_CBDE\IRBTModUtils" (
-  copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Mods_CBDE\IRBTModUtils"
-)
-if exist "$(BattleTechGameDir)\Mods\IRBTModUtils" (
-  copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Mods\IRBTModUtils"
-)
-if exist "$(BattleTechGameDir)\Mods\Core\IRBTModUtils" (
-  copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Mods\Core\IRBTModUtils"
-)
-if exist "$(RogueTechRepo)\Core\IRBTModUtils" (
-  copy /Y "$(TargetPath)" "$(RogueTechRepo)\Core\IRBTModUtils"
-)
-if exist "$(BTARepo)\IRBTModUtils" (
-  copy /Y "$(TargetPath)" "$(BTARepo)\IRBTModUtils"
-)
-if exist "$(BattleTechGameDir)\Release_CAC\CustomBundle\IRBTModUtils" (
-  echo %25BattleTechGameDir%25
-  copy /Y "$(TargetPath)" "$(BattleTechGameDir)\Release_CAC\Release\CustomBundle\IRBTModUtils"
-)
-		</PostBuildEvent>
-  </PropertyGroup>
 </Project>

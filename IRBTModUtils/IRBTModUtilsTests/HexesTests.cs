@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Collections.Generic;
 using us.frostraptor.modUtils.math;
 
 namespace HexUtilsCountingTests {

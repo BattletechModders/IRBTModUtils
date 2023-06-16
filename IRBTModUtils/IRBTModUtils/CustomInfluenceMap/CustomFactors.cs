@@ -1,9 +1,4 @@
-﻿using BattleTech;
-using Harmony;
-using IRBTModUtils.CustomInfluenceMap;
-using IRBTModUtils.Extension;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace IRBTModUtils.CustomInfluenceMap
 {

@@ -1,6 +1,4 @@
-﻿using BattleTech;
-using BattleTech.UI;
-using Harmony;
+﻿using BattleTech.UI;
 using IRBTModUtils;
 using System;
 using us.frostraptor.modUtils.CustomDialog;
@@ -11,6 +9,7 @@ namespace us.frostraptor.modUtils {
    // Register listeners for our events, using the CombatHUD hook
    [HarmonyPatch(typeof(CombatHUD), "SubscribeToMessages")]
     public static class CombatHUD_SubscribeToMessages {
+        [HarmonyPostfix]
         public static void Postfix(CombatHUD __instance, bool shouldAdd) {
             if (__instance != null) {
                 __instance.Combat.MessageCenter.Subscribe(
@@ -23,6 +22,7 @@ namespace us.frostraptor.modUtils {
     [HarmonyPatch(typeof(CombatHUD), "Init")]
     [HarmonyPatch(new Type[] { typeof(CombatGameState) })]
     public static class CombatHUD_Init {
+        [HarmonyPostfix]
         public static void Postfix(CombatHUD __instance, CombatGameState Combat) {
             SharedState.CombatHUD = __instance;
 
@@ -33,7 +33,8 @@ namespace us.frostraptor.modUtils {
     // Teardown shared elements to prevent NREs
     [HarmonyPatch(typeof(CombatHUD), "OnCombatGameDestroyed")]
     public static class CombatHUD_OnCombatGameDestroyed {
-        public static void Prefix() {
+        [HarmonyPrefix]
+        public static void Prefix(ref bool __runOriginal) {
             Coordinator.OnCombatGameDestroyed();
             
             SharedState.CombatHUD = null;
