@@ -95,5 +95,4 @@
     <Compile Remove="Logging\ModConfig.cs" />
     <Compile Remove="Logging\State.cs" />
   </ItemGroup>
-
 </Project>
