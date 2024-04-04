@@ -18,15 +18,18 @@ namespace us.frostraptor.modUtils {
             {
                 string truncatedGUID = combatant.GUID != null ? string.Format("{0:X}", combatant.GUID.GetHashCode()) : "0xDEADBEEF";
 
+                label = $"{combatant.DisplayName}_{truncatedGUID}";
                 if (combatant is AbstractActor actor) 
                 {
-                    label = $"{actor.DisplayName}_{actor?.GetPilot()?.Name}_{truncatedGUID}";
+                    try
+                    {
+                        label = $"{actor.DisplayName}_{actor?.GetPilot()?.Name}_{truncatedGUID}";
+                    }
+                    catch (System.NotImplementedException)
+                    {
+                        label = $"CAC_LOSPseudoActor_{truncatedGUID}";
+                    }
                 } 
-                else 
-                {
-                    label = $"{combatant.DisplayName}_{truncatedGUID}";
-                }
-
             }
 
             SharedState.CombatantLabels[combatant] = label;

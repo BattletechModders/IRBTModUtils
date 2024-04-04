@@ -26,8 +26,8 @@
     <AssemblyTitle>IRBTModUtils</AssemblyTitle>
     <Product>IRBTModUtils</Product>
     <Copyright>Copyright © 2023</Copyright>
-    <AssemblyVersion>2.0.0.1</AssemblyVersion>
-    <FileVersion>2.0.0.1</FileVersion>
+    <AssemblyVersion>2.0.2.0</AssemblyVersion>
+    <FileVersion>2.0.2.0</FileVersion>
     <LangVersion>11</LangVersion>
     
     <!-- Necessary for the Xoshiro random code -->
@@ -83,7 +83,8 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\..\..\..\BattleTech_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>UnityEngine.ImageConversionModule.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <Private>False</Private>
