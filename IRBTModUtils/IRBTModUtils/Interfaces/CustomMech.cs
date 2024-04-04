@@ -10,6 +10,10 @@ namespace IRBTModUtils {
     bool isQuad { get; }
     bool isTurret { get; }
     string UnitTypeName { get; }
+    ICombatant carrier { get; }
+    bool isMountedExternal { get; }
+    HashSet<ICombatant> attachedInternally { get; }
+    HashSet<ICombatant> attachedExternally { get; }
     HashSet<ArmorLocation> GetDFASelfDamageLocations();
     HashSet<ArmorLocation> GetLandmineDamageArmorLocations();
     HashSet<ArmorLocation> GetBurnDamageArmorLocations();
