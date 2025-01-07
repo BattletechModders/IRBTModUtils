@@ -17,13 +17,6 @@ namespace IRBTModUtils.Feature
         {
             if (mech == null) { return 0f; }
 
-            TagSet mechTags = mech.GetTags();
-            if (mechTags.Contains(ModTags.ImmobileUnit))
-            {
-                Mod.Log.Debug?.Write($"Mech: {mech.DistinctId()} has tag: '{ModTags.ImmobileUnit}', returning 0 movement.");
-                return 0;
-            }
-
             bool isImmobile = mech.StatCollection.GetValue<bool>(ModStats.ImmobileUnit);
             if (isImmobile)
             {
