@@ -13,16 +13,28 @@ namespace IRBTModUtils.Feature
             ModState.ExtMovementMods.Sort((x, y) => x.Priority.CompareTo(y.Priority));
         }
 
+        public static bool IsImmobile(AbstractActor actor)
+        {
+            Statistic statistic;
+            return actor.StatCollection.stats.TryGetValue(ModStats.ImmobileUnit, out statistic) && statistic.Value<bool>();
+        }
+
+        public static void SetImmobile(AbstractActor actor, bool value)
+        {
+            Statistic statistic;
+            if (actor.StatCollection.stats.TryGetValue(ModStats.ImmobileUnit, out statistic))
+            {
+                statistic.SetValue(value);
+            }
+            else
+            {
+                actor.StatCollection.AddStatistic(ModStats.ImmobileUnit, value);
+            }
+        }
+
         internal static float ModifiedDistanceExt(this Mech mech, bool skipExternalAll, bool isRun = false, params string[] extensionsToSkip)
         {
             if (mech == null) { return 0f; }
-
-            TagSet mechTags = mech.GetTags();
-            if (mechTags.Contains(ModTags.ImmobileUnit))
-            {
-                Mod.Log.Debug?.Write($"Mech: {mech.DistinctId()} has tag: '{ModTags.ImmobileUnit}', returning 0 movement.");
-                return 0;
-            }
 
             bool isImmobile = mech.StatCollection.GetValue<bool>(ModStats.ImmobileUnit);
             if (isImmobile)

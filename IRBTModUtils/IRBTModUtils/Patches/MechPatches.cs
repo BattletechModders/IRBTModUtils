@@ -64,8 +64,10 @@ namespace IRBTModUtils.Patches
         {
             Mod.Log.Trace?.Write("M:I entered.");
 
+            var immobileValue = __instance.GetTags().Contains(ModTags.ImmobileUnit);
+
             // Initialize mod-specific statistics
-            __instance.StatCollection.AddStatistic<bool>(ModStats.ImmobileUnit, false);
+            __instance.StatCollection.AddStatistic<bool>(ModStats.ImmobileUnit, immobileValue);
         }
     }
 }
