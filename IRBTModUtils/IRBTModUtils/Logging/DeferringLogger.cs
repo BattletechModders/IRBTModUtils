@@ -36,7 +36,8 @@ namespace IRBTModUtils.Logging
                 File.Delete(LogFile);
             }
 
-            LogStream = File.AppendText(LogFile);
+            LogStream = new StreamWriter(LogFile,true,new System.Text.UTF8Encoding(false), 65535);
+            //LogStream = File.AppendText(LogFile);
             LogLabel = "<" + logLabel + ">";
 
             IsDebug = isDebug;

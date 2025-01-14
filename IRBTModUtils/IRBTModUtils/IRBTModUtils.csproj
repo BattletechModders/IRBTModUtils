@@ -25,10 +25,10 @@
     <DebugType>none</DebugType>
     <AssemblyTitle>IRBTModUtils</AssemblyTitle>
     <Product>IRBTModUtils</Product>
-    <Copyright>Copyright © 2023</Copyright>
-    <AssemblyVersion>2.0.3.0</AssemblyVersion>
-    <FileVersion>2.0.3.0</FileVersion>
-    <LangVersion>11</LangVersion>
+    <Copyright>Copyright © 2025</Copyright>
+    <AssemblyVersion>2.0.4.0</AssemblyVersion>
+    <FileVersion>2.0.4.0</FileVersion>
+    <LangVersion>13</LangVersion>
     
     <!-- Necessary for the Xoshiro random code -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -61,6 +61,9 @@
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.BTech">
+      <HintPath>..\..\..\..\..\SteamLibrary\steamapps\common\BATTLETECH\BattleTech_Data\Managed\Mono.BTech.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <Private>False</Private>

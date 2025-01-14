@@ -1,4 +1,5 @@
 ﻿using HBS.Logging;
+using IRBTModUtils.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,14 +12,22 @@ namespace IRBTModUtils.Logging
 
     public struct ModLogWriter
     {
-        readonly StreamWriter LogStream;
+                
+        AsyncLogWorker Async = AsyncLogWorker._instance;
+        private readonly StreamWriter LogStream;
         public readonly ILog HBSLogger;
         public readonly string Label;
+        string now;
+
+        bool isSync = false;
+        DateTime dateTime;
         LogLevel Level;
 
         public ModLogWriter(StreamWriter sw, string label)
         {
+            // Disable Async log path if user specifies. Otherwise lazy instantiate
             LogStream = sw;
+            Async.writer = sw;
             if (label != null)
             {
                 HBSLogger = Logger.GetLogger(label);
@@ -34,22 +43,70 @@ namespace IRBTModUtils.Logging
 
         public void Write(string message)
         {
-            // Write our internal log
-            string now = DateTime.UtcNow.ToString("HH:mm:ss.ffff", System.Globalization.CultureInfo.InvariantCulture);
-            LogStream.WriteLine(now + " " + message);
-            LogStream.Flush();
-
+            dateTime = DateTime.UtcNow;
+            if (Async._bRunning == false)
+            {
+                isSync = true;
+                now = FastFormatDate.ToHHmmssfff(ref dateTime);
+                SendMessageSync(now, message, LogStream);
+            }
+            else
+            {
+                Async.SendMessageDate(message, dateTime.Ticks, LogStream);
+            }
             if (HBSLogger != null)
             {
-                // Write the HBS logging
+                // Reformat the HBS Log Time, in async mode so time will not be set prior
+                if (!isSync)
+                {
+                    now = FastFormatDate.ToHHmmssfff(ref dateTime);
+                }
                 HBSLogger.LogAtLevel(Level, now + " " + Label + " " + message);
+                isSync = false;
             }
         }
 
+
         public void Write(Exception e, string message = null)
         {
-            // Write our internal log
-            string now = DateTime.UtcNow.ToString("HH:mm:ss.ffff", System.Globalization.CultureInfo.InvariantCulture);
+
+            dateTime = DateTime.UtcNow;
+
+
+            // Async Fallback implementation
+            if (Async._bRunning == false)
+            {
+                isSync = true;
+                now = FastFormatDate.ToHHmmssfff(ref dateTime);
+                SendMessageExceptSync(now, e, message, LogStream);
+            }
+            else
+            {
+                Async.SendMessageDateExcept(message, e, dateTime.Ticks, LogStream);
+            }
+            if (HBSLogger != null)
+            {
+                // Reformat the HBS Log Time, in async mode so time will not be set prior
+                if (isSync)
+                {
+                    now = FastFormatDate.ToHHmmssfff(ref dateTime);
+                }
+                if (message != null) LogStream.WriteLine(now + message);
+                HBSLogger.LogAtLevel(Level, now + " " + Label + " " + e?.Message);
+                HBSLogger.LogAtLevel(Level, now + " " + Label + "Stacktrace available in mod logs");
+                isSync = false;
+            }
+        }
+        
+        private readonly void SendMessageSync(string now, string message, StreamWriter LogStream)
+        {
+            LogStream.WriteLine(now + " " + message);
+            LogStream.Flush();
+        }
+
+
+        private readonly void SendMessageExceptSync(string now, Exception e, string message, StreamWriter LogStream)
+        {
             if (message != null) LogStream.WriteLine(now + " " + message);
             LogStream.WriteLine(now + " " + e?.Message);
             LogStream.WriteLine(now + " " + e?.StackTrace);
@@ -67,14 +124,6 @@ namespace IRBTModUtils.Logging
             }
 
             LogStream.Flush();
-
-            if (HBSLogger != null)
-            {
-                // Write the HBS logging
-                if (message != null) LogStream.WriteLine(now + message);
-                HBSLogger.LogAtLevel(Level, now + " " + Label + " " + e?.Message);
-                HBSLogger.LogAtLevel(Level, now + " " + Label + "Stacktrace available in mod logs");
-            }
         }
     }
 }

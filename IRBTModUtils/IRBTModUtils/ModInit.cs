@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security;
 using us.frostraptor.modUtils.CustomDialog;
 
 namespace IRBTModUtils
@@ -45,6 +47,7 @@ namespace IRBTModUtils
 
             Log.Debug?.Write($"ModDir is:{modDirectory}");
             Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
+            
             Mod.Config.LogConfig();
 
             Assembly asm = Assembly.GetExecutingAssembly();
