@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace IRBTModUtils.Logging
@@ -41,6 +42,8 @@ namespace IRBTModUtils.Logging
             Level = LogLevel.Warning;
         }
 
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(string message)
         {
             dateTime = DateTime.UtcNow;
@@ -67,6 +70,7 @@ namespace IRBTModUtils.Logging
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(Exception e, string message = null)
         {
 
@@ -98,6 +102,7 @@ namespace IRBTModUtils.Logging
             }
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly void SendMessageSync(string now, string message, StreamWriter LogStream)
         {
             LogStream.WriteLine(now + " " + message);
@@ -105,6 +110,7 @@ namespace IRBTModUtils.Logging
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly void SendMessageExceptSync(string now, Exception e, string message, StreamWriter LogStream)
         {
             if (message != null) LogStream.WriteLine(now + " " + message);

@@ -32,13 +32,16 @@ namespace IRBTModUtils.Logging
 
         AsyncLogStatCollection _statCollection = new AsyncLogStatCollection();
 
-        public MPMCQueue queue = new MPMCQueue(4096 * 4096);
+        public MPMCQueue queue = new MPMCQueue(1024*1024);
+
+        AsyncLogMessage[] messages = new AsyncLogMessage[1024*1024];
 
         // Local Memory
         private const int MEMORY_SIZE = 4 * 1024; // 4 KiB
-        private const int MEMORY_PAGES = 128;        // UTF16 -> UTF8 Expansion size
+        private const int MEMORY_PAGES = 256;        // UTF16 -> UTF8 Expansion size
+        private const int STAT_WINDOW_COUNT = 1000; // Outputs stats every number of messages
 
-        // Allocate 4 KiB pages as 
+        // Allocate 256 4KiB memory pages, for a total of 1.048576 MB
         public char[] buffer = new char[MEMORY_PAGES * MEMORY_SIZE];
 
         // Writer
@@ -50,7 +53,6 @@ namespace IRBTModUtils.Logging
         public double saved = 0;
         public int msgCounter = 0;
         public long msgReal = 0;
-        public long processCount = 0;
         public long burstCount = 0;
         public StreamWriter statusLogWriter = null;
         private DateTime _curDateTime;
@@ -110,6 +112,12 @@ namespace IRBTModUtils.Logging
 
             _statCollection.StartWrite();
 
+            if (writer == null)
+            {
+                writer = item._writer;
+            }
+
+
             // Exception log, rarer so concat for now
             if (item._e != null)
             {
@@ -147,6 +155,7 @@ namespace IRBTModUtils.Logging
                     _curDateTime = new DateTime(_curTicks);
                     FastFormatDate.ToHHmmssfff(ref _curDateTime, ref buffer);
                 }
+
                 for (int i = 0; i < item._message.Length; i++)
                 {
                     buffer[i + DateLength] = item._message[i];
@@ -177,7 +186,7 @@ namespace IRBTModUtils.Logging
                 _statCollection.StopFlush();
             }
 
-            if (msgCounter > 1000)
+            if (msgCounter > STAT_WINDOW_COUNT)
             {
                 msgCounter = 0;
 
@@ -202,30 +211,84 @@ namespace IRBTModUtils.Logging
         }
 
 
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        long ProcessMessages()
+        private int DoubleBuffer()
         {
-
-            processCount = 0;
+            int processCount = 0;
+            // Double buffer references to managed memory quickly, to free up queue space
             while (queue.TryDequeue(out object item))
             {
                 if (item != null)
                 {
+                    // If the writer is null, a dispatch may have a closed/bad stream
+                    if (((AsyncLogMessage)item)._writer == null) { continue; }
+                    
+                    // Empty messages are handled later, add to buffer and continue;
+                    messages[processCount] = (AsyncLogMessage)item;
                     processCount++;
-                    ProcessItem((AsyncLogMessage)item);
                 }
             }
+            return processCount;
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        long ProcessMessages()
+        {
+
+            StreamWriter curWriter = null;
+
+            int tapeCount = 0;
+            int flushCount = 0;
+
+            // Quickly dequeue references to thread local memory to free up buffer to reduce contention
+            int processCount = DoubleBuffer();
+
+            // Imagine the queue of messages as tapes of writes, as mods often log in blocks
+            // We cut the tape for each streamwriter, block encode, and send that to flush
+            // 
+            // This helps the OS process contiguous writes where possible, reduces cache misses,
+            // and reduces HDD write head seek times to a track (in not-fragmented file case)
+
+            long ticks = 0;
+            string now = "";
+            DateTime curUtc;
+
+            for (int i = 0; i < processCount; i++)
+            {
+                // On init, make sure to assign
+                if (i == 0) { curWriter = messages[i]._writer; }
+
+                if (messages[i]._e == null)
+                {
+                    // Cut the tape, and write existing contiguous
+                    if (messages[i]._writer != curWriter)
+                    {
+                        curWriter.Flush();
+                        flushCount++;
+                        curWriter = messages[i]._writer;
+                    }
+                    long len = messages[i]._message.Length + 14;
+
+                    if (ticks != messages[i]._ticks)
+                    {  
+                        curUtc = new DateTime(messages[i]._ticks);
+                        now = FastFormatDate.ToHHmmssfff(ref curUtc);
+                    }
+                    curWriter.WriteLine(now + messages[i]._message);
+                }
+
+                // Last item, cut the current tape and flush. Decrement count for indexing
+                if (i == processCount - 1 ) { curWriter.Flush(); flushCount++; }
+
+            }
+            
+            
             if (processCount > 0)
             {
-                if (burstCount < processCount) { burstCount = processCount; };
-                if (writer != null)
-                {
-                    _statCollection.StartFlush();
-                    writer.Flush();
-                    _statCollection.StopFlush();
-                }
+                SendStatusMessage($"Processing - Messages: {processCount}, Flushes: {flushCount}");
             }
+
             return processCount;
         }
 
@@ -305,9 +368,7 @@ namespace IRBTModUtils.Logging
 
         void BIST()
         {
-
             byte[] randBytes = new byte[4096];
-
 
             bistLogPath = Path.Combine(Mod.ModDir + "/" + bistLogName);
             if (File.Exists(bistLogPath))
@@ -317,8 +378,8 @@ namespace IRBTModUtils.Logging
             var bistLogWriter = new StreamWriter(bistLogPath, true, new System.Text.UTF8Encoding(false), 65535);
             //var bistLogWriter = File.AppendText(bistLogPath);
 
-            SendMessage("AsyncLog [BIST] Starting", statusLogWriter);
-            SendMessage("AsyncLog [BIST] Generating Random String", statusLogWriter);
+            SendStatusMessage("AsyncLog [BIST] Starting");
+            SendStatusMessage("AsyncLog [BIST] Generating Random String");
             RandomNumberGenerator.Create().GetBytes(randBytes);
             var testString = Convert.ToBase64String(randBytes);
 
@@ -329,29 +390,19 @@ namespace IRBTModUtils.Logging
 
 
             SendStatusMessage("AsyncLog [BIST] Checking File Creation");
-            int i = 0;
             while (!File.Exists(bistLogPath))
             {
-                Thread.Sleep(100);
-                if (i > 1000)
-                {
-                    SendStatusMessage("AsyncLog [BIST] FAIL CREATE - TIMEOUT");
-                }
-                i++;
+                Thread.Sleep(1000);
+                SendStatusMessage("AsyncLog [BIST] FAIL CREATE - TIMEOUT");
+                return;
             }
 
             SendStatusMessage("AsyncLog [BIST] File Created");
-
-            i = 0;
             while (new FileInfo(bistLogPath).Length == 0)
             {
-                Thread.Sleep(100);
-
-                if (i > 1000)
-                {
-                    SendStatusMessage("AsyncLog [BIST] FAIL WRITE - TIMEOUT");
-                }
-                i++;
+                Thread.Sleep(1000);
+                SendStatusMessage("AsyncLog [BIST] FAIL WRITE - TIMEOUT");
+                return;
             }
             SendStatusMessage("AsyncLog [BIST] File Modified");
             bistLogWriter.Close();
@@ -379,7 +430,6 @@ namespace IRBTModUtils.Logging
                 return;
             }
 
-
             if (readBack == checkString)
             {
                 SendStatusMessage("AsyncLog [BIST] SUCCESS");
@@ -404,11 +454,9 @@ namespace IRBTModUtils.Logging
 
             var spinner = new SpinWait();
 
-
             statusLogWriter.WriteLine($"{now}AsyncLog [RUN] Running Worker");
             while (_bRunning)
             {
-
                 if (ProcessMessages() > 0)
                 {
                     spinner.Reset();
