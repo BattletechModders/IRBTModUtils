@@ -9,8 +9,6 @@ namespace IRBTModUtils.Helper
     /// </summary>
     public static class FastFormatDate
     {
-        // Outputs a string with DateTime.ToString("HH:mm:ss.fff ")
-
         /// <summary>
         /// Faster formatting function for "HH:mm:ss.fff ". Allocates new string
         /// </summary>
@@ -33,7 +31,6 @@ namespace IRBTModUtils.Helper
             chars[12] = ' ';
             return new string(chars);
         }
-
 
         /// <summary>
         /// Faster formatting function for "[HH:mm:ss.fff]". Allocates new string
@@ -60,13 +57,12 @@ namespace IRBTModUtils.Helper
         }
 
         /// <summary>
-        /// Faster formatting function for "HH:mm:ss.ffff ". Allocates new string
+        /// Faster formatting function for "HH:mm:ss.ffff ". Does not allocate a new string. In Len > 14
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [SuppressUnmanagedCodeSecurity]
         public unsafe static void ToHHmmssffff(ref DateTime dateTime, ref char[] chars)
         {
-
             chars[0] = (char)((int)(dateTime.Hour / 10) + 48);
             chars[1] = (char)((dateTime.Hour % 10) + 48);
             chars[2] = ':';
@@ -83,8 +79,9 @@ namespace IRBTModUtils.Helper
             chars[13] = ' ';
         }
 
-
-        //"HH:mm:ss.fff"
+        /// <summary>
+        /// Faster formatting function for "HH:mm:ss.fff ". Does not allocate a new string. In Len > 13
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static void ToHHmmssfff(ref DateTime dateTime, ref char[] chars)
         {
@@ -103,7 +100,9 @@ namespace IRBTModUtils.Helper
             chars[12] = ' ';
         }
 
-        //"HH-mm-ss"
+        /// <summary>
+        /// Faster formatting function for "HH-mm-ss ". Does not allocate a new string. In Len > 9.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static void ToHHmmss(ref DateTime dateTime, ref char[] chars)
         {
@@ -118,11 +117,12 @@ namespace IRBTModUtils.Helper
             chars[8] = ' ';
         }
 
+        /// <summary>
+        /// Faster formatting function for "HH-mm-ss". Does not allocate a new string.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static string ToHHmmss(ref DateTime dateTime)
         {
-
-
             char* chars = stackalloc char[8];
             chars[0] = (char)((int)(dateTime.Hour / 10) + 48);
             chars[1] = (char)((dateTime.Hour % 10) + 48);

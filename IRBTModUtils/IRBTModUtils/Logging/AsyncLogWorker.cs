@@ -384,7 +384,6 @@ namespace IRBTModUtils.Logging
 
         void Loop()
         {
-
             var dt = DateTime.UtcNow;
             string now = FastFormatDate.ToHHmmssfff_(ref dt);
             _statusLog.WriteLine($"{now}AsyncLog [RUN] Thread Started");

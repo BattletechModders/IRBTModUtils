@@ -71,7 +71,6 @@ namespace IRBTModUtils.Logging
             // Convert milliseconds to microseconds (1E3)
             return sb.ToString();
         }
-
     }
 
     /// <summary>
@@ -257,7 +256,6 @@ namespace IRBTModUtils.Logging
         public void StartEncode() { _encodeTime.Start(); }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StopEncode() { _encodeTime.Stop(); }
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartFlush() { _flushTime.Start(); }
