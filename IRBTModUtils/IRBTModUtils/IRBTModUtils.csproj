@@ -62,20 +62,15 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Mono.BTech">
-      <HintPath>..\..\..\..\..\SteamLibrary\steamapps\common\BATTLETECH\BattleTech_Data\Managed\Mono.BTech.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <Private>False</Private>
     </Reference>
-    
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Core">
       <Private>False</Private>
     </Reference>
-    
     <Reference Include="Unity.TextMeshPro">
       <Private>False</Private>
     </Reference>
