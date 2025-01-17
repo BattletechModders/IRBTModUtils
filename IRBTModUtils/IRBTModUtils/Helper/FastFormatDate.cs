@@ -118,7 +118,7 @@ namespace IRBTModUtils.Helper
         }
 
         /// <summary>
-        /// Faster formatting function for "HH-mm-ss". Does not allocate a new string.
+        /// Faster formatting function for "HH-mm-ss". Allocates a new string
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static string ToHHmmss(ref DateTime dateTime)
