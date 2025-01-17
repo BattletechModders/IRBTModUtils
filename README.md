@@ -46,8 +46,6 @@ IRBTModUtils extends the after action report with support for RESULTS, "objectiv
 
 IRBTModUtils provides a DeferredLogger class which utilizes ModLogWriter for improved logging performance. An asynchronous logger has been added to improve performance and offload time spent formatting, encoding, and flushing log files away from the Unity main thread. By default, the ModLogWriter will default to synchronous behavior. 
 
-BIST FAIL to synchronous fallback is currently disabled for testing purposes and will be removed once validated on multiple platforms.
-
 ### Asynchronous Logging
 The following options can be added to mod.json to enable asynchronous log mode:
 

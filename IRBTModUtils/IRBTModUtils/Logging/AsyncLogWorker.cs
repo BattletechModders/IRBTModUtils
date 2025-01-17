@@ -371,7 +371,6 @@ namespace IRBTModUtils.Logging
             SendStatusMessage("AsyncLog [BIST] Read Back: " + readBack);
             SendStatusMessage("AsyncLog [BIST] Check Str: " + checkString);
 
-
             if (Mod.Config.SimulateAsyncBISTFail)
             {
                 SendStatusMessage("AsyncLog [BIST] SIMULATED BIST FAILURE");
