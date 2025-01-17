@@ -5,10 +5,8 @@ using System.Threading;
 
 namespace IRBTModUtils.Helper
 {
-
     // From: https://github.com/alexandrnikitin/MPMCQueue.NET?tab=readme-ov-file
     // Generally follows ideas in existing MPMC queues. Underlying implementation for later.NET ConcurrentQueue versions
-
     [StructLayout(LayoutKind.Explicit, Size = 384)]
     public class MPMCQueue
     {

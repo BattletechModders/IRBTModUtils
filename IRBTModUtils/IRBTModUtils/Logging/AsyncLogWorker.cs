@@ -9,8 +9,6 @@ using System.Threading;
 
 namespace IRBTModUtils.Logging
 {
-
-
     /// <summary>
     /// Asynchronous logger that is lazy instantiated and processes messages through an MPMC queue. Offloads log processing from main thread.
     /// </summary>
@@ -47,7 +45,6 @@ namespace IRBTModUtils.Logging
         private int NEW_LINE_SIZE = Environment.NewLine.Length;
         private string NEW_LINE = Environment.NewLine;
 
-
         // Allocate 512 4KiB memory pages, for a total of 2,097.152 KB
         // Worst case experienced so far was 200 KB.
         public char[] buffer = new char[MEMORY_TOTAL];
@@ -60,7 +57,6 @@ namespace IRBTModUtils.Logging
         string _statusLogPath = "";
         string _bistLogPath = "";
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void SendStatusMessage(string message)
         {
@@ -69,7 +65,6 @@ namespace IRBTModUtils.Logging
             _statusLog.WriteLine(now + message);
             _statusLog.Flush();
         }
-
         private AsyncLogWorker()
         {
             if (Directory.Exists(Mod.ModDir))
@@ -94,9 +89,6 @@ namespace IRBTModUtils.Logging
             StartBIST();
             SendStatusMessage("AsyncLog [INIT] Initialization Complete");
         }
-
-
-
 
         /// <summary>
         /// Quickly dequeue references to thread local memory to free up buffer, avoid flush delay, and reduce contention
@@ -326,8 +318,6 @@ namespace IRBTModUtils.Logging
             SendStatusMessage("AsyncLog [BIST] Dispatching Message");
             long testDate = DateTime.UtcNow.Ticks;
             SendMessageDate(testString, testDate, bistLogWriter);
-
-
             SendStatusMessage("AsyncLog [BIST] Checking File Creation");
 
             int i = 0;

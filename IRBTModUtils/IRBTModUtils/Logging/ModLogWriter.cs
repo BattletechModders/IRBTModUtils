@@ -42,7 +42,6 @@ namespace IRBTModUtils.Logging
             Level = LogLevel.Warning;
         }
 
-
         /// <summary>
         /// ModLogWriter write function without exception handling and toggleable synchronous/multithreaded async write
         /// </summary>        

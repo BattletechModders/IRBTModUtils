@@ -1,11 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
 
-
 namespace IRBTModUtils.Math
 {
     public static class StatUtils
     {
-        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WelfordAlgorithm(
             double     sample, 
@@ -29,6 +27,5 @@ namespace IRBTModUtils.Math
                 //variance = variance / (iterations - 1);
             }
         }
-
     }
 }

@@ -14,7 +14,6 @@ namespace IRBTModUtils
 {
     public static class Mod
     {
-
         public const string HarmonyPackage = "us.frostraptor.IRBTModUtils";
         public const string LogName = "irbt_mod_utils";
 

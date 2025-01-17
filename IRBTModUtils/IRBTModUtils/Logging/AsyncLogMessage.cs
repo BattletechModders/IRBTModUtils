@@ -5,14 +5,12 @@ using System.Runtime.InteropServices;
 
 namespace IRBTModUtils.Logging
 {
-
     /// <summary>
     /// Async Message data to be dispatched. Attempts to reduce queue allocations and marshals managed memory instead
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Size = 32)]
     public class AsyncLogMessage
     {
-
         [FieldOffset(0)]
         public long _ticks;
         [FieldOffset(8)]
@@ -35,5 +33,4 @@ namespace IRBTModUtils.Logging
             _message = message;
         }
     };
-
 }
