@@ -52,7 +52,7 @@ The following options can be added to mod.json to enable asynchronous log mode:
 ```csharp
     "Settings": { 
         ...
-		"AsyncLogging": true,
+        "AsyncLogging": true,
         "SimulateAsyncBISTFail":  false,
         ...
     }

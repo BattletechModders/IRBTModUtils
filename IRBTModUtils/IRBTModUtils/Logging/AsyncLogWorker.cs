@@ -1,14 +1,11 @@
 ﻿using IRBTModUtils.Helper;
 using System;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Security.Permissions;
 using System.Threading;
-using System.Security.Cryptography;
-using Org.BouncyCastle.Utilities;
-using UIWidgetsSamples.Shops;
 
 namespace IRBTModUtils.Logging
 {
@@ -64,6 +61,7 @@ namespace IRBTModUtils.Logging
         string _bistLogPath = "";
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void SendStatusMessage(string message)
         {
             var utc = DateTime.UtcNow;
@@ -244,10 +242,12 @@ namespace IRBTModUtils.Logging
 
 
         // Helper functions for main thread to log their synchronous times. Benchmark non-exception path as most oft used.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartSyncStat() {
             _asyncStats.StartSync();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StopSyncStat()
         {
             _asyncStats.StopSync();
@@ -322,7 +322,6 @@ namespace IRBTModUtils.Logging
             SendStatusMessage("AsyncLog [BIST] Generating Random String");
             RandomNumberGenerator.Create().GetBytes(randBytes);
             var testString = Convert.ToBase64String(randBytes);
-
 
             SendStatusMessage("AsyncLog [BIST] Dispatching Message");
             long testDate = DateTime.UtcNow.Ticks;

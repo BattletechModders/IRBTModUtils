@@ -12,7 +12,6 @@ namespace IRBTModUtils.Logging
         private readonly string LogFile;
 
         private readonly StreamWriter LogStream;
-        //private readonly FileStream fileStream;
         public readonly string LogLabel;
 
         public readonly bool IsDebug;

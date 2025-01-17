@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
-using System.Security.Permissions;
-using System.Runtime.InteropServices;
-using IRBTModUtils.Math;
-using System.Text;
-using System.Runtime.CompilerServices;
+﻿using IRBTModUtils.Math;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Text;
+
 namespace IRBTModUtils.Logging
 {
     /// <summary>
@@ -113,6 +114,7 @@ namespace IRBTModUtils.Logging
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Sample(long processCount, long maxMessageBytes, long bytesWritten, string prefix, StreamWriter sw)
         {
             _windowCount += processCount;
@@ -181,6 +183,7 @@ namespace IRBTModUtils.Logging
             _bytesWritten += bytesWritten;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void AppendHeader(StringBuilder sb, string prefix = "")
         {
             if (prefix != "") { sb.Append(prefix); }
@@ -189,6 +192,7 @@ namespace IRBTModUtils.Logging
             sb.Append("|----------------|----------------|---------------------|---------------------|\n");
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void AppendOverallStats(StringBuilder sb, string prefix = "")
         {
             if (prefix != "") { sb.Append(prefix); }
