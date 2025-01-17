@@ -73,8 +73,8 @@ namespace IRBTModUtils.Helper
             chars[9] = (char)((dateTime.Millisecond / 100) + 48);
             chars[10] = (char)(((dateTime.Millisecond % 100) / 10) + 48);
             chars[11] = (char)(((dateTime.Millisecond % 10)) + 48);
-            chars[11] = (char)(((dateTime.Millisecond % 1)) + 48);
-            chars[12] = ' ';
+            chars[12] = (char)(((dateTime.Millisecond % 1)) + 48);
+            chars[13] = ' ';
         }
 
 
@@ -94,7 +94,6 @@ namespace IRBTModUtils.Helper
             chars[9] = (char)((dateTime.Millisecond / 100) + 48);
             chars[10] = (char)(((dateTime.Millisecond % 100) / 10) + 48);
             chars[11] = (char)(((dateTime.Millisecond % 10)) + 48);
-            chars[11] = (char)(((dateTime.Millisecond % 1)) + 48);
             chars[12] = ' ';
         }
 

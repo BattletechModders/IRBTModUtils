@@ -13,13 +13,14 @@ namespace IRBTModUtils.Logging
 
     public struct ModLogWriter
     {
-                
+        // Lazy instantiated asynchronous worker, will toggle when first accessed. Async as in thread, not as in coroutine.
         AsyncLogWorker Async = AsyncLogWorker._instance;
         private readonly StreamWriter LogStream;
         public readonly ILog HBSLogger;
         public readonly string Label;
-        string now;
 
+        // Formatted date time placeholder
+        string now;
         bool isSync = false;
         DateTime dateTime;
         LogLevel Level;
@@ -28,7 +29,6 @@ namespace IRBTModUtils.Logging
         {
             // Disable Async log path if user specifies. Otherwise lazy instantiate
             LogStream = sw;
-            Async.writer = sw;
             if (label != null)
             {
                 HBSLogger = Logger.GetLogger(label);
@@ -42,7 +42,10 @@ namespace IRBTModUtils.Logging
             Level = LogLevel.Warning;
         }
 
-        
+
+        /// <summary>
+        /// ModLogWriter write function without exception handling and toggleable synchronous/multithreaded async write
+        /// </summary>        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(string message)
         {
@@ -70,6 +73,9 @@ namespace IRBTModUtils.Logging
         }
 
 
+        /// <summary>
+        /// ModLogWriter write function with exception handling and toggleable synchronous/multithreaded async write
+        /// </summary>        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(Exception e, string message = null)
         {
@@ -102,14 +108,23 @@ namespace IRBTModUtils.Logging
             }
         }
         
+        
+        /// <summary>
+        /// Existing synchronous implementation of ModLogWriter without exception handling or date formatting
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly void SendMessageSync(string now, string message, StreamWriter LogStream)
         {
+            Async.StartSyncStat();
             LogStream.WriteLine(now + " " + message);
             LogStream.Flush();
+            Async.StopSyncStat();
         }
 
 
+        /// <summary>
+        /// Existing synchronous implementation of ModLogWriter with exception handling and without date formatting
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly void SendMessageExceptSync(string now, Exception e, string message, StreamWriter LogStream)
         {

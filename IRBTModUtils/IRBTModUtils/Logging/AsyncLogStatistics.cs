@@ -3,6 +3,8 @@ using System.Security.Permissions;
 using System.Runtime.InteropServices;
 using IRBTModUtils.Math;
 using System.Text;
+using System.Runtime.CompilerServices;
+using System.IO;
 namespace IRBTModUtils.Logging
 {
     /// <summary>
@@ -87,6 +89,16 @@ namespace IRBTModUtils.Logging
         AsyncLogStat _flushTime;
         AsyncLogStat _syncTime;
 
+        private long _burstCount = 0;
+        private long _bytesWritten  = 0;
+        private long _maxMessageBytes = 0;
+        private long _msgCount = 0;
+        private long _windowCount = 0;
+
+        private long _sampleWindow = 1000;
+        private long _prewarmWindow = 1000;
+        private bool _clearedPrewarm = false;
+
         public AsyncLogStatCollection()
         {
             _writeTime = new AsyncLogStat(ref _asyncWatch, "Write");
@@ -94,6 +106,52 @@ namespace IRBTModUtils.Logging
             _dispatchTime = new AsyncLogStat(ref _dispatchWatch, "Dispatch");
             _flushTime = new AsyncLogStat(ref _asyncWatch, "Flush");
             _syncTime = new AsyncLogStat(ref _dispatchWatch, "Sync");
+            _burstCount = 0;
+            _msgCount = 0;
+            _bytesWritten = 0;
+            _maxMessageBytes = 0;
+        }
+
+
+        public bool Sample(long processCount, long maxMessageBytes, long bytesWritten, string prefix, StreamWriter sw)
+        {
+            _windowCount += processCount;
+            
+            if (processCount > _burstCount)
+            {
+               _burstCount = processCount;
+            }
+            
+            if (maxMessageBytes > _maxMessageBytes)
+            {
+               _maxMessageBytes = maxMessageBytes;
+            }
+
+            _bytesWritten += bytesWritten;
+            _msgCount += processCount;
+
+
+            if (!_clearedPrewarm)
+            {
+                if (_windowCount >= _prewarmWindow)
+                {
+                    sw.WriteLine(ToString(prefix));
+                    sw.Flush();
+                    ResetAll();
+                    _windowCount = _windowCount - _sampleWindow;
+                    _clearedPrewarm = true;
+                    return true;
+                }
+            }
+            if (_windowCount >= _sampleWindow)
+            {
+                    
+                sw.WriteLine(ToString(prefix));
+                sw.Flush();
+                _windowCount = _windowCount - _sampleWindow;
+                return true;
+            }
+            return false;
         }
 
         public void ResetAll()
@@ -103,14 +161,48 @@ namespace IRBTModUtils.Logging
             _dispatchTime.Reset();
             _flushTime.Reset();
             _syncTime.Reset();
+            _burstCount = 0;
+            _bytesWritten = 0;
+            _msgCount = 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void CalculateBurst(long burstCount)
+        {
+            if (burstCount > _burstCount)
+            {
+               _burstCount = burstCount;
+            }
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void TallyBytesWritten(long bytesWritten)
+        {
+            _bytesWritten += bytesWritten;
+        }
+
+        void AppendHeader(StringBuilder sb, string prefix = "")
+        {
+            if (prefix != "") { sb.Append(prefix); }
+            sb.AppendFormat("|{0,15} |{1,15} |{2,20} |{3,20} |\n", "Stat", "Count", "Total", "Mean");
+            if (prefix != "") { sb.Append(prefix); }
+            sb.Append("|----------------|----------------|---------------------|---------------------|\n");
+        }
+
+        void AppendOverallStats(StringBuilder sb, string prefix = "")
+        {
+            if (prefix != "") { sb.Append(prefix); }
+            sb.AppendLine($"Message Count: {_msgCount} Burst Count: {_burstCount} Burst Bytes {_maxMessageBytes} Bytes Written: {_bytesWritten}\n");
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("|{0,15} |{1,15} |{2,20} |{3,20} |\n", "Stat", "Count", "Total", "Mean");
-            sb.Append("|----------------|----------------|---------------------|---------------------|\n");
+
+            AppendHeader(sb);
+            AppendOverallStats(sb);
             sb.AppendLine(_writeTime.PrintInstance());
             sb.AppendLine(_encodeTime.PrintInstance());
             sb.AppendLine(_dispatchTime.PrintInstance());
@@ -119,37 +211,58 @@ namespace IRBTModUtils.Logging
             return sb.ToString();
         }
         
-        public string ToString(string Prefix)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ToString(string prefix)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(Prefix);
-            sb.AppendFormat("|{0,15} |{1,15} |{2,20} |{3,20} |\n", "Stat", "Count", "Total", "Mean");
-            sb.Append(Prefix);
-            sb.Append("|----------------|----------------|---------------------|---------------------|\n");
-            sb.AppendLine(Prefix + _writeTime.PrintInstance());
-            sb.AppendLine(Prefix + _encodeTime.PrintInstance());
-            sb.AppendLine(Prefix + _dispatchTime.PrintInstance());
-            sb.AppendLine(Prefix + _flushTime.PrintInstance());
-            sb.AppendLine(Prefix + _syncTime.PrintInstance());
+            if (!_clearedPrewarm)
+            {
+                AppendOverallStats(sb, prefix + "(Prewarm) ");
+            }
+            else
+            {                
+                AppendOverallStats(sb, prefix);
+            }
+            char[] tab = new char[prefix.Length];
+            for(int i = 0; i < tab.Length; i++)
+            {
+                tab[i] = ' ';
+            }
+            string tabStr = new string(tab);
+            AppendHeader(sb, tabStr);
+            sb.AppendLine(tabStr+ _writeTime.PrintInstance());
+            sb.AppendLine(tabStr + _encodeTime.PrintInstance());
+            sb.AppendLine(tabStr + _dispatchTime.PrintInstance());
+            sb.AppendLine(tabStr + _flushTime.PrintInstance());
+            sb.AppendLine(tabStr + _syncTime.PrintInstance());
             return sb.ToString();
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartDispatch() { _dispatchTime.Start(); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StopDispatch() { _dispatchTime.Stop(); }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartWrite() { _writeTime.Start(); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StopWrite() { _writeTime.Stop(); }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartEncode() { _encodeTime.Start(); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StopEncode() { _encodeTime.Stop(); }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartFlush() { _flushTime.Start(); }
-        public void StopFlush() { _flushTime.Stop(); 
-        
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void StopFlush() { _flushTime.Stop(); }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartSync() { _syncTime.Start(); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StopSync() { _syncTime.Stop(); }
 
     }

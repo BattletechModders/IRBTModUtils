@@ -12,6 +12,7 @@ namespace IRBTModUtils.Logging
         private readonly string LogFile;
 
         private readonly StreamWriter LogStream;
+        //private readonly FileStream fileStream;
         public readonly string LogLabel;
 
         public readonly bool IsDebug;
@@ -37,7 +38,7 @@ namespace IRBTModUtils.Logging
             }
 
             LogStream = new StreamWriter(LogFile,true,new System.Text.UTF8Encoding(false), 65535);
-            //LogStream = File.AppendText(LogFile);
+
             LogLabel = "<" + logLabel + ">";
 
             IsDebug = isDebug;

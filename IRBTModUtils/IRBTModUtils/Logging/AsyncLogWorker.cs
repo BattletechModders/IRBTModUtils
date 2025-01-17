@@ -8,6 +8,7 @@ using System.Security.Permissions;
 using System.Threading;
 using System.Security.Cryptography;
 using Org.BouncyCastle.Utilities;
+using UIWidgetsSamples.Shops;
 
 namespace IRBTModUtils.Logging
 {
@@ -22,6 +23,7 @@ namespace IRBTModUtils.Logging
     {
         private static readonly Lazy<AsyncLogWorker> lazy =
             new Lazy<AsyncLogWorker>(() => new AsyncLogWorker());
+
         public static AsyncLogWorker _instance
         {
             get
@@ -30,188 +32,77 @@ namespace IRBTModUtils.Logging
             }
         }
 
-        AsyncLogStatCollection _statCollection = new AsyncLogStatCollection();
+        AsyncLogStatCollection _asyncStats = new AsyncLogStatCollection();
 
-        public MPMCQueue queue = new MPMCQueue(1024*1024);
+        // Buffer memory. Note, relatively small since pointers not data
+        public MPMCQueue queue = new MPMCQueue(1024 * 1024);
 
-        AsyncLogMessage[] messages = new AsyncLogMessage[1024*1024];
+        // Local queue for freeing up concurrent queue during bursting
+        AsyncLogMessage[] messages = new AsyncLogMessage[1024 * 1024];
 
-        // Local Memory
+        // Constants
         private const int MEMORY_SIZE = 4 * 1024; // 4 KiB
-        private const int MEMORY_PAGES = 256;        // UTF16 -> UTF8 Expansion size
-        private const int STAT_WINDOW_COUNT = 1000; // Outputs stats every number of messages
+        private const int MEMORY_PAGES = 512;        // UTF16 -> UTF8 Expansion size
+        private const int MEMORY_TOTAL = MEMORY_SIZE * MEMORY_PAGES;
+        private const int HHMMSSFFF_DATE_LEN = 13;
+        private const string STATUS_LOG_NAME = "irbt_async.log";
+        private const string BIST_LOG_NAME = "irbt_async_bist.log";
+        private int NEW_LINE_SIZE = Environment.NewLine.Length;
+        private string NEW_LINE = Environment.NewLine;
 
-        // Allocate 256 4KiB memory pages, for a total of 1.048576 MB
-        public char[] buffer = new char[MEMORY_PAGES * MEMORY_SIZE];
+
+        // Allocate 512 4KiB memory pages, for a total of 2,097.152 KB
+        // Worst case experienced so far was 200 KB.
+        public char[] buffer = new char[MEMORY_TOTAL];
 
         // Writer
-        public StreamWriter writer = null;
-
-
-        public double processTime = 0;
-        public double dispatchTime = 0;
-        public double saved = 0;
-        public int msgCounter = 0;
-        public long msgReal = 0;
-        public long burstCount = 0;
-        public StreamWriter statusLogWriter = null;
-        private DateTime _curDateTime;
-        private long _curTicks;
-        readonly private int DateLength = 13;
-
-        long bytesWritten = 0;
+        public StreamWriter _statusLog = null;
 
         public bool _bRunning = false;
 
-        bool clearPrewarm = true;
-
-        readonly string asyncLogName = "irbt_async.log";
-        readonly string bistLogName = "irbt_async_bist.log";
-        string statusLogPath = "irbt_async.log";
-        string bistLogPath = "irbt_async_bist.log";
+        string _statusLogPath = "";
+        string _bistLogPath = "";
 
 
         void SendStatusMessage(string message)
         {
             var utc = DateTime.UtcNow;
             string now = FastFormatDate.ToHHmmssfff(ref utc);
-            statusLogWriter.WriteLine(now + message);
-            statusLogWriter.Flush();
+            _statusLog.WriteLine(now + message);
+            _statusLog.Flush();
         }
 
         private AsyncLogWorker()
         {
             if (Directory.Exists(Mod.ModDir))
             {
-                statusLogPath = Path.Combine(Mod.ModDir + "/" + asyncLogName);
+                _statusLogPath = Path.Combine(Mod.ModDir + "/" + STATUS_LOG_NAME);
+            }
+            else
+            {
+                _statusLogPath = Path.Combine(STATUS_LOG_NAME);
             }
 
-            statusLogWriter = new StreamWriter(statusLogPath);
+            _statusLog = new StreamWriter(_statusLogPath);
 
             if (!Mod.Config.AsyncLogging)
             {
-
                 SendStatusMessage("AsyncLog [INIT] Synchronous Logging Enabled - Shutting Down");
                 return;
             }
-
 
             SendStatusMessage("AsyncLog [INIT] Asynchronous Logging Enabled - Starting Thread");
             StartThread();
             StartBIST();
             SendStatusMessage("AsyncLog [INIT] Initialization Complete");
-
-        }
-
-        // Will crash thread if segfault. No exception handling for speed.
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void ProcessItem(AsyncLogMessage item)
-        {
-            msgCounter += 1;
-            msgReal += 1;
-
-            _statCollection.StartWrite();
-
-            if (writer == null)
-            {
-                writer = item._writer;
-            }
-
-
-            // Exception log, rarer so concat for now
-            if (item._e != null)
-            {
-                _curDateTime = new DateTime(item._ticks);
-                string now = FastFormatDate.ToHHmmssfff(ref _curDateTime);
-
-                if (item._message != null)
-                {
-                    item._writer.WriteLine(now + item._message);
-                
-                    bytesWritten += now.Length + item._message.Length;
-                }
-                item._writer.WriteLine(now + item._e?.Message);
-                item._writer.WriteLine(now + item._e?.StackTrace);
-                    
-                    
-                if (item._e?.InnerException != null)
-                {
-                    item._writer.WriteLine(now + item._e?.InnerException.Message);
-                    item._writer.WriteLine(now + item._e?.InnerException.StackTrace);
-
-                    if (item._e.InnerException?.InnerException != null)
-                    {
-                        item._writer.WriteLine(now + item._e?.InnerException?.InnerException.Message);
-                        item._writer.WriteLine(now + item._e?.InnerException?.InnerException.StackTrace);
-                    }
-                }
-            }
-            else
-            {
-                //buffer = System.Buffers.ArrayPool<char>.Shared.Rent(DateLength + item.message.Length + 1);
-                if (_curTicks != item._ticks)
-                {
-                    _curTicks = item._ticks;
-                    _curDateTime = new DateTime(_curTicks);
-                    FastFormatDate.ToHHmmssfff(ref _curDateTime, ref buffer);
-                }
-
-                for (int i = 0; i < item._message.Length; i++)
-                {
-                    buffer[i + DateLength] = item._message[i];
-                }
-                buffer[DateLength + item._message.Length] = '\n';
-                int outputLength = DateLength + item._message.Length + 1;
-
-                item._writer.Write(buffer, 0, outputLength);
-                bytesWritten += outputLength;
-            }
-
-            _statCollection.StopWrite();
-            // Upon initialization, local writer is null, ensure immediate flush occurs to be responsive                        
-            if (writer == null)
-            {
-                _statCollection.StartFlush();
-                writer = item._writer;
-                writer.Flush();
-                _statCollection.StopFlush();
-            }
-            // Flush stored writer if new messages come in
-            else if (writer != item._writer)
-            {
-                _statCollection.StartFlush();
-                writer.Flush();
-                writer = item._writer;
-                item._writer.Flush();
-                _statCollection.StopFlush();
-            }
-
-            if (msgCounter > STAT_WINDOW_COUNT)
-            {
-                msgCounter = 0;
-
-                string now = FastFormatDate.ToHHmmssfff(ref _curDateTime);
-                SendStatusMessage($"AsyncLog [STAT] Thread ID: {System.Environment.CurrentManagedThreadId} Messages: {msgReal} Bytes: {bytesWritten}");
-                statusLogWriter.WriteLine(_statCollection.ToString("             "));
-                statusLogWriter.Flush();
-
-
-                if (clearPrewarm)
-                {
-                    clearPrewarm = false;
-                    msgReal = 0;
-
-                    _statCollection.ResetAll();
-                    SendStatusMessage("AsyncLog [RUN] Clearing Prewarm");
-                    statusLogWriter.Flush();
-                }
-
-            }
-
         }
 
 
-        
+
+
+        /// <summary>
+        /// Quickly dequeue references to thread local memory to free up buffer, avoid flush delay, and reduce contention
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int DoubleBuffer()
         {
@@ -223,7 +114,7 @@ namespace IRBTModUtils.Logging
                 {
                     // If the writer is null, a dispatch may have a closed/bad stream
                     if (((AsyncLogMessage)item)._writer == null) { continue; }
-                    
+
                     // Empty messages are handled later, add to buffer and continue;
                     messages[processCount] = (AsyncLogMessage)item;
                     processCount++;
@@ -232,120 +123,173 @@ namespace IRBTModUtils.Logging
             return processCount;
         }
 
+        /// <summary>
+        /// Dequeues messages into a thread local buffer and flushes contiguasly based on writer
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         long ProcessMessages()
         {
+            // Note, observation of stats can throw off performance due to overhead/readout. Dispatch times worsened due to attempts to be nicer to the CPU
+            // Original flush implementation preserved to slow producer down for HDD users. Pending Pinvoke based optimization for encoding.
 
+            DateTime curUtc;
             StreamWriter curWriter = null;
-
-            int tapeCount = 0;
             int flushCount = 0;
+            long ticks = 0;
+            long bytesWritten = 0;
+            long maxMessageBytes = 0;
+            int truncatedSize = 0;
+            string nowStr = "";
 
-            // Quickly dequeue references to thread local memory to free up buffer to reduce contention
             int processCount = DoubleBuffer();
 
-            // Imagine the queue of messages as tapes of writes, as mods often log in blocks
-            // We cut the tape for each streamwriter, block encode, and send that to flush
-            // 
-            // This helps the OS process contiguous writes where possible, reduces cache misses,
-            // and reduces HDD write head seek times to a track (in not-fragmented file case)
-
-            long ticks = 0;
-            string now = "";
-            DateTime curUtc;
-
+            // Begin processing messages
             for (int i = 0; i < processCount; i++)
             {
-                // On init, make sure to assign
+                // On init, make sure to assign writer. Should be null checked prior to buffering
                 if (i == 0) { curWriter = messages[i]._writer; }
 
-                if (messages[i]._e == null)
-                {
-                    // Cut the tape, and write existing contiguous
-                    if (messages[i]._writer != curWriter)
-                    {
-                        curWriter.Flush();
-                        flushCount++;
-                        curWriter = messages[i]._writer;
-                    }
-                    long len = messages[i]._message.Length + 14;
+                AsyncLogMessage item = messages[i];
 
-                    if (ticks != messages[i]._ticks)
-                    {  
-                        curUtc = new DateTime(messages[i]._ticks);
-                        now = FastFormatDate.ToHHmmssfff(ref curUtc);
-                    }
-                    curWriter.WriteLine(now + messages[i]._message);
+                // Cut the tape, and write existing contiguous data
+                if (item._writer != curWriter)
+                {
+                    _asyncStats.StartFlush();
+                    curWriter.Flush();
+                    _asyncStats.StopFlush();
+                    flushCount++;
+                    curWriter = item._writer;
                 }
 
-                // Last item, cut the current tape and flush. Decrement count for indexing
-                if (i == processCount - 1 ) { curWriter.Flush(); flushCount++; }
+                _asyncStats.StartWrite();
 
+                // Cache date during message bursts
+                if (ticks != item._ticks)
+                {
+                    curUtc = new DateTime(item._ticks);
+                    ticks = item._ticks;
+                    FastFormatDate.ToHHmmssfff(ref curUtc, ref buffer);
+                }
+
+                // Truncation Handling
+                truncatedSize = item._message.Length;
+                if (item._message.Length > MEMORY_TOTAL)
+                {
+                    // Truncate and leave space for newline and date str
+                    truncatedSize = MEMORY_TOTAL - NEW_LINE_SIZE - HHMMSSFFF_DATE_LEN;
+                }
+                for (int j = 0; j < truncatedSize; j++)
+                {
+                    buffer[j + HHMMSSFFF_DATE_LEN] = item._message[j];
+                }
+
+                // Concat line ending, branching hopefully optimized by JIT. Windows \r\n, Unix: \n
+                // See: https://learn.microsoft.com/en-us/dotnet/api/system.environment.newline?view=netframework-4.7.2
+                buffer[HHMMSSFFF_DATE_LEN + item._message.Length] = NEW_LINE[0];
+                if (NEW_LINE_SIZE == 2)
+                {
+                    buffer[HHMMSSFFF_DATE_LEN + item._message.Length + 1] = NEW_LINE[1];
+                }
+                int outputLength = HHMMSSFFF_DATE_LEN + truncatedSize + NEW_LINE_SIZE;
+
+
+                // Output
+                curWriter.Write(buffer, 0, outputLength);
+
+                bytesWritten += outputLength;
+                if (maxMessageBytes < outputLength)
+                {
+                    maxMessageBytes = outputLength;
+                }
+
+                // Exception handling not optimized, dynamically allocate for now and avoid truncation
+                if (item._e != null)
+                {
+                    item._writer.WriteLine(nowStr + item._e?.StackTrace);
+
+                    if (item._e?.InnerException != null)
+                    {
+                        item._writer.WriteLine(nowStr + item._e?.InnerException.Message);
+                        item._writer.WriteLine(nowStr + item._e?.InnerException.StackTrace);
+
+                        if (item._e.InnerException?.InnerException != null)
+                        {
+                            item._writer.WriteLine(nowStr + item._e?.InnerException?.InnerException.Message);
+                            item._writer.WriteLine(nowStr + item._e?.InnerException?.InnerException.StackTrace);
+                        }
+                    }
+                }
+                _asyncStats.StopWrite();
+
+                // Last item, cut the current tape and flush. Decrement count for indexing
+                if (i == processCount - 1)
+                {
+
+                    _asyncStats.StartFlush();
+                    curWriter.Flush();
+                    flushCount++;
+                    _asyncStats.StopFlush();
+                }
             }
-            
-            
+
             if (processCount > 0)
             {
-                SendStatusMessage($"Processing - Messages: {processCount}, Flushes: {flushCount}");
+                var printUtc = DateTime.UtcNow;
+                nowStr = FastFormatDate.ToHHmmssfff(ref printUtc);
+                _asyncStats.Sample(processCount, maxMessageBytes, bytesWritten, nowStr, _statusLog);
             }
 
             return processCount;
         }
 
 
-        public void StartSyncStat()
-        {
-            _statCollection.StartSync();
-
+        // Helper functions for main thread to log their synchronous times. Benchmark non-exception path as most oft used.
+        public void StartSyncStat() {
+            _asyncStats.StartSync();
         }
 
         public void StopSyncStat()
         {
-            _statCollection.StopSync();
+            _asyncStats.StopSync();
         }
 
 
-
+        // Refactor these functions, naming needs work
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendMessageDate(string message, long dateTimeTicks, StreamWriter writer)
         {
-            _statCollection.StartDispatch();
+            _asyncStats.StartDispatch();
             var Message = new AsyncLogMessage(message, null, dateTimeTicks, writer);
             queue.TryEnqueue(Message);
-            _statCollection.StopDispatch();
+            _asyncStats.StopDispatch();
         }
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendMessageDateExcept(string message, Exception e, long dateTimeTicks, StreamWriter writer)
         {
-            _statCollection.StartDispatch();
+            _asyncStats.StartDispatch();
             var Message = new AsyncLogMessage(message, e, dateTimeTicks, writer);
             queue.TryEnqueue(Message);
-            _statCollection.StopDispatch();
+            _asyncStats.StopDispatch();
         }
-
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendMessage(string message, StreamWriter writer)
         {
-            _statCollection.StartDispatch();
+            _asyncStats.StartDispatch();
             var Message = new AsyncLogMessage(message, null, DateTime.UtcNow.Ticks, writer);
             queue.TryEnqueue(Message);
-            _statCollection.StopDispatch();
+            _asyncStats.StopDispatch();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendMessageException(string message, Exception e, StreamWriter writer)
         {
-            _statCollection.StartDispatch();
+            _asyncStats.StartDispatch();
             var Message = new AsyncLogMessage(message, e, DateTime.UtcNow.Ticks, writer);
             queue.TryEnqueue(Message);
-            _statCollection.StopDispatch();
+            _asyncStats.StopDispatch();
         }
-
-
 
         void StartBIST()
         {
@@ -355,7 +299,6 @@ namespace IRBTModUtils.Logging
             thread.Join();
         }
 
-
         void StartThread()
         {
             var thread = new Thread(Loop);
@@ -364,19 +307,16 @@ namespace IRBTModUtils.Logging
             _bRunning = true;
         }
 
-
-
         void BIST()
         {
             byte[] randBytes = new byte[4096];
 
-            bistLogPath = Path.Combine(Mod.ModDir + "/" + bistLogName);
-            if (File.Exists(bistLogPath))
+            _bistLogPath = Path.Combine(Mod.ModDir + "/" + BIST_LOG_NAME);
+            if (File.Exists(_bistLogPath))
             {
-                File.Delete(bistLogPath);
+                File.Delete(_bistLogPath);
             }
-            var bistLogWriter = new StreamWriter(bistLogPath, true, new System.Text.UTF8Encoding(false), 65535);
-            //var bistLogWriter = File.AppendText(bistLogPath);
+            var bistLogWriter = new StreamWriter(_bistLogPath, true, new System.Text.UTF8Encoding(true), 65535);
 
             SendStatusMessage("AsyncLog [BIST] Starting");
             SendStatusMessage("AsyncLog [BIST] Generating Random String");
@@ -390,36 +330,47 @@ namespace IRBTModUtils.Logging
 
 
             SendStatusMessage("AsyncLog [BIST] Checking File Creation");
-            while (!File.Exists(bistLogPath))
+
+            int i = 0;
+            while (!File.Exists(_bistLogPath))
             {
-                Thread.Sleep(1000);
-                SendStatusMessage("AsyncLog [BIST] FAIL CREATE - TIMEOUT");
-                return;
+                Thread.Sleep(100);
+                if (i == 100)
+                {
+                    SendStatusMessage("AsyncLog [BIST] FAIL CREATE - TIMEOUT");
+                }
+                i++;
             }
 
+            i = 0;
             SendStatusMessage("AsyncLog [BIST] File Created");
-            while (new FileInfo(bistLogPath).Length == 0)
+            while (new FileInfo(_bistLogPath).Length == 0)
             {
-                Thread.Sleep(1000);
-                SendStatusMessage("AsyncLog [BIST] FAIL WRITE - TIMEOUT");
-                return;
+                Thread.Sleep(100);
+                if (i == 100)
+                {
+                    SendStatusMessage("AsyncLog [BIST] FAIL WRITE - TIMEOUT");
+                }
+                i++;
             }
             SendStatusMessage("AsyncLog [BIST] File Modified");
             bistLogWriter.Close();
-            var reader = new StreamReader(bistLogPath);
-            string readBack = reader.ReadToEnd().Remove(0, 13);
+            var reader = new StreamReader(_bistLogPath);
+            string readBack = reader.ReadToEnd().Remove(0, 14);
 
-            if (readBack.Length < 4096) { statusLogWriter.Write("AsyncLog [BIST] FAIL - READBACK LENGTH"); return; }
+            if (readBack.Length < 4096) { _statusLog.Write("AsyncLog [BIST] FAIL - READBACK LENGTH"); return; }
 
             var refTime = new DateTime(testDate);
-            string checkString = FastFormatDate.ToHHmmssfff(ref refTime) + testString + "\n";
-            checkString = checkString.Remove(0, 13);
-            if (checkString.Length < 4096) { statusLogWriter.Write("AsyncLog [BIST] FAIL - CHECKSTR LENGTH"); return; }
+
+            // Readback will fail if the endline is incorrect. This is intentional to check other platforms
+            string checkString = FastFormatDate.ToHHmmssfff(ref refTime) + testString + Environment.NewLine;
+            checkString = checkString.Remove(0, 14);
+
+            if (checkString.Length < 4096) { _statusLog.Write("AsyncLog [BIST] FAIL - CHECKSTR LENGTH"); return; }
 
             SendStatusMessage("AsyncLog [BIST] Read Back: " + readBack);
             SendStatusMessage("AsyncLog [BIST] Check Str: " + checkString);
 
-            reader.Close();
 
             if (Mod.Config.SimulateAsyncBISTFail)
             {
@@ -433,28 +384,28 @@ namespace IRBTModUtils.Logging
             if (readBack == checkString)
             {
                 SendStatusMessage("AsyncLog [BIST] SUCCESS");
+                reader.Close();
                 return;
             }
             SendStatusMessage("AsyncLog [BIST] FAIL - BAD READBACK");
+            reader.Close();
             Mod.Config.AsyncLogging = false;
             this._bRunning = false;
             return;
         }
-
-
 
         void Loop()
         {
 
             var dt = DateTime.UtcNow;
             string now = FastFormatDate.ToHHmmssfff(ref dt);
-            statusLogWriter.WriteLine($"{now}AsyncLog [RUN] Thread Started");
-            statusLogWriter.WriteLine($"{now}AsyncLog [RUN] Logger Status File: {statusLogPath}");
-            statusLogWriter.Flush();
+            _statusLog.WriteLine($"{now}AsyncLog [RUN] Thread Started");
+            _statusLog.WriteLine($"{now}AsyncLog [RUN] Logger Status File: {_statusLogPath}");
+            _statusLog.Flush();
 
             var spinner = new SpinWait();
 
-            statusLogWriter.WriteLine($"{now}AsyncLog [RUN] Running Worker");
+            _statusLog.WriteLine($"{now}AsyncLog [RUN] Running Worker");
             while (_bRunning)
             {
                 if (ProcessMessages() > 0)
@@ -463,9 +414,7 @@ namespace IRBTModUtils.Logging
                 }
                 spinner.SpinOnce();
             }
-            statusLogWriter.WriteLine($"{now}AsyncLog [RUN] Stopping Worker");
+            _statusLog.WriteLine($"{now}AsyncLog [RUN] Stopping Worker");
         }
-
-
     }
 }
