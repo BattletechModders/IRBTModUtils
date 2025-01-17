@@ -74,7 +74,7 @@ namespace IRBTModUtils.Feature
                 }
 
                 // Make comparisons safer
-                modifiedDist = (float)Math.Ceiling(modifiedDist);
+                modifiedDist = (float)System.Math.Ceiling(modifiedDist);
 
                 if (modifiedDist < Mod.Config.MinimumMove)
                 {

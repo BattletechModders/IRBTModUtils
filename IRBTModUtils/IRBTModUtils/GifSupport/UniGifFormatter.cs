@@ -112,7 +112,7 @@ namespace IRBTModUtils {
 
         // Size of Global Color Table(3 Bits)
         int val = (gifBytes[10] & 7) + 1;
-        gifData.m_sizeOfGlobalColorTable = (int)Math.Pow(2, val);
+        gifData.m_sizeOfGlobalColorTable = (int)System.Math.Pow(2, val);
       }
 
       // Background Color Index(1 Byte)
@@ -228,7 +228,7 @@ namespace IRBTModUtils {
 
         // Size of Local Color Table(3 Bits)
         int val = (gifBytes[byteIndex] & 7) + 1;
-        ib.m_sizeOfLocalColorTable = (int)Math.Pow(2, val);
+        ib.m_sizeOfLocalColorTable = (int)System.Math.Pow(2, val);
 
         byteIndex++;
       }

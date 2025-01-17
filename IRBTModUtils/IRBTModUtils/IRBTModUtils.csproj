@@ -25,10 +25,10 @@
     <DebugType>none</DebugType>
     <AssemblyTitle>IRBTModUtils</AssemblyTitle>
     <Product>IRBTModUtils</Product>
-    <Copyright>Copyright © 2023</Copyright>
-    <AssemblyVersion>2.0.3.0</AssemblyVersion>
-    <FileVersion>2.0.3.0</FileVersion>
-    <LangVersion>11</LangVersion>
+    <Copyright>Copyright © 2025</Copyright>
+    <AssemblyVersion>2.0.4.0</AssemblyVersion>
+    <FileVersion>2.0.4.0</FileVersion>
+    <LangVersion>13</LangVersion>
     
     <!-- Necessary for the Xoshiro random code -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -65,14 +65,12 @@
     <Reference Include="Newtonsoft.Json">
       <Private>False</Private>
     </Reference>
-    
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Core">
       <Private>False</Private>
     </Reference>
-    
     <Reference Include="Unity.TextMeshPro">
       <Private>False</Private>
     </Reference>

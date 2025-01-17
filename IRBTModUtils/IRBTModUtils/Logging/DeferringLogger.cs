@@ -36,7 +36,8 @@ namespace IRBTModUtils.Logging
                 File.Delete(LogFile);
             }
 
-            LogStream = File.AppendText(LogFile);
+            LogStream = new StreamWriter(LogFile, true, new System.Text.UTF8Encoding(false), 65535);
+
             LogLabel = "<" + logLabel + ">";
 
             IsDebug = isDebug;
@@ -66,7 +67,7 @@ namespace IRBTModUtils.Logging
 
         public Nullable<ModLogWriter> Warn
         {
-            get 
+            get
             {
                 if (CombinedWriter.HBSLogger.IsWarningEnabled) return CombinedWriter;
                 else return (Nullable<ModLogWriter>)ModOnlyWriter;
@@ -84,6 +85,6 @@ namespace IRBTModUtils.Logging
             private set { }
         }
     }
-    
+
 }
 

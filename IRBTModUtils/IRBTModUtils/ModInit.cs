@@ -12,7 +12,6 @@ namespace IRBTModUtils
 {
     public static class Mod
     {
-
         public const string HarmonyPackage = "us.frostraptor.IRBTModUtils";
         public const string LogName = "irbt_mod_utils";
 
@@ -45,6 +44,7 @@ namespace IRBTModUtils
 
             Log.Debug?.Write($"ModDir is:{modDirectory}");
             Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
+            
             Mod.Config.LogConfig();
 
             Assembly asm = Assembly.GetExecutingAssembly();
