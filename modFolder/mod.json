@@ -13,6 +13,8 @@
     "Settings": { 
         "Debug" : false,
         "Trace" : false,
+		"AsyncLogging": true,
+		"SimulateAsyncBISTFail": false,
         "Features" : {
 			"EnableMovementModifiers" : true
 		},

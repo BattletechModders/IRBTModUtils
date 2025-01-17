@@ -44,9 +44,28 @@ IRBTModUtils extends the after action report with support for RESULTS, "objectiv
 
 ## Deferring Logger
 
-Loreum ipsum
+IRBTModUtils provides a DeferredLogger class which utilizes ModLogWriter for improved logging performance. An asynchronous logger has been added to improve performance and offload time spent formatting, encoding, and flushing log files away from the Unity main thread. By default, the ModLogWriter will default to synchronous behavior. 
 
-## Redzen Ziggurat Guassian
+BIST FAIL to synchronous fallback is currently disabled for testing purposes and will be removed once validated on multiple platforms.
+
+### Asynchronous Logging
+The following options can be added to mod.json to enable asynchronous log mode:
+
+```csharp
+    "Settings": { 
+        ...
+		"AsyncLogging": true,
+        "SimulateAsyncBISTFail":  false,
+        ...
+    }
+```
+
+- Setting `AsyncLogging` to `true` will enable the asynchronous dispatch and logging will be processed off the main thread. Default is `false`
+- Setting `SimulateAsyncBISTFail` to `true` simulates a failure in the async log thread. For normal operation, set to false or omit. Default is `false`
+
+In asynchronous mode, the BIST (Built-In-Test) routine will run after the asynchronous thread is initialized and validate that a file is being created and written to by the asynchronous logger thread. The routine reads back the written string and validates equivalents. If this test fails or times out, the asynchronous logger will error and revert to synchronous logging. This is intended to catch errors in logging and report them to users.
+
+## Redzen Ziggurat Gaussian
 
 Loreum ipsum
 
