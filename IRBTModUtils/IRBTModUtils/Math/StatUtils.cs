@@ -26,8 +26,9 @@ namespace IRBTModUtils.Math
             {
                 lastMean = mean;
                 mean += (sample - mean) / iterations;
-                variance += (sample - mean) * (sample - lastMean);
-                variance = variance / (iterations - 1);
+                // Should reconsider statistics and possibly do a double pass. Might be in underflow NaN
+                //variance += (sample - mean) * (sample - lastMean);
+                //variance = variance / (iterations - 1);
             }
         }
 

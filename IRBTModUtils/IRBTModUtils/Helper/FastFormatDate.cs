@@ -11,11 +11,15 @@ namespace IRBTModUtils.Helper
     /// <summary>
     /// Provides direct formatting functions to speed up System.DateTime
     /// </summary>
-    public class FastFormatDate
+    public static class FastFormatDate
     {
-        // Outputs a string with DateTime.ToString(HH:mm:ss.fff)
+        // Outputs a string with DateTime.ToString("HH:mm:ss.fff ")
+
+        /// <summary>
+        /// Faster formatting function for "HH:mm:ss.fff ". Allocates new string
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static string ToHHmmssfff(ref DateTime dateTime)
+        public unsafe static string ToHHmmssfff_(ref DateTime dateTime)
         {
             char* chars = stackalloc char[13];
             chars[0] = (char)((int)(dateTime.Hour / 10) + 48);
@@ -34,6 +38,10 @@ namespace IRBTModUtils.Helper
             return new string(chars);
         }
 
+
+        /// <summary>
+        /// Faster formatting function for "[HH:mm:ss.fff]". Allocates new string
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static string ToHHmmssfffBR(ref DateTime dateTime)
         {
@@ -55,7 +63,9 @@ namespace IRBTModUtils.Helper
             return new string(chars);
         }
 
-        //"HH:mm:ss.ffff"
+        /// <summary>
+        /// Faster formatting function for "HH:mm:ss.ffff ". Allocates new string
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [SuppressUnmanagedCodeSecurity]
         public unsafe static void ToHHmmssffff(ref DateTime dateTime, ref char[] chars)

@@ -67,7 +67,7 @@ namespace IRBTModUtils.Logging
         void SendStatusMessage(string message)
         {
             var utc = DateTime.UtcNow;
-            string now = FastFormatDate.ToHHmmssfff(ref utc);
+            string now = FastFormatDate.ToHHmmssfff_(ref utc);
             _statusLog.WriteLine(now + message);
             _statusLog.Flush();
         }
@@ -235,7 +235,7 @@ namespace IRBTModUtils.Logging
             if (processCount > 0)
             {
                 var printUtc = DateTime.UtcNow;
-                nowStr = FastFormatDate.ToHHmmssfff(ref printUtc);
+                nowStr = FastFormatDate.ToHHmmssfff_(ref printUtc);
                 _asyncStats.Sample(processCount, maxMessageBytes, bytesWritten, nowStr, _statusLog);
             }
 
@@ -363,7 +363,7 @@ namespace IRBTModUtils.Logging
             var refTime = new DateTime(testDate);
 
             // Readback will fail if the endline is incorrect. This is intentional to check other platforms
-            string checkString = FastFormatDate.ToHHmmssfff(ref refTime) + testString + Environment.NewLine;
+            string checkString = FastFormatDate.ToHHmmssfff_(ref refTime) + testString + Environment.NewLine;
             checkString = checkString.Remove(0, 14);
 
             if (checkString.Length < 4096) { _statusLog.Write("AsyncLog [BIST] FAIL - CHECKSTR LENGTH"); return; }
@@ -398,7 +398,7 @@ namespace IRBTModUtils.Logging
         {
 
             var dt = DateTime.UtcNow;
-            string now = FastFormatDate.ToHHmmssfff(ref dt);
+            string now = FastFormatDate.ToHHmmssfff_(ref dt);
             _statusLog.WriteLine($"{now}AsyncLog [RUN] Thread Started");
             _statusLog.WriteLine($"{now}AsyncLog [RUN] Logger Status File: {_statusLogPath}");
             _statusLog.Flush();

@@ -53,7 +53,7 @@ namespace IRBTModUtils.Logging
             if (Async._bRunning == false)
             {
                 isSync = true;
-                now = FastFormatDate.ToHHmmssfff(ref dateTime);
+                now = FastFormatDate.ToHHmmssfff_(ref dateTime);
                 SendMessageSync(now, message, LogStream);
             }
             else
@@ -65,7 +65,7 @@ namespace IRBTModUtils.Logging
                 // Reformat the HBS Log Time, in async mode so time will not be set prior
                 if (!isSync)
                 {
-                    now = FastFormatDate.ToHHmmssfff(ref dateTime);
+                    now = FastFormatDate.ToHHmmssfff_(ref dateTime);
                 }
                 HBSLogger.LogAtLevel(Level, now + " " + Label + " " + message);
                 isSync = false;
@@ -87,7 +87,7 @@ namespace IRBTModUtils.Logging
             if (Async._bRunning == false)
             {
                 isSync = true;
-                now = FastFormatDate.ToHHmmssfff(ref dateTime);
+                now = FastFormatDate.ToHHmmssfff_(ref dateTime);
                 SendMessageExceptSync(now, e, message, LogStream);
             }
             else
@@ -99,7 +99,7 @@ namespace IRBTModUtils.Logging
                 // Reformat the HBS Log Time, in async mode so time will not be set prior
                 if (isSync)
                 {
-                    now = FastFormatDate.ToHHmmssfff(ref dateTime);
+                    now = FastFormatDate.ToHHmmssfff_(ref dateTime);
                 }
                 if (message != null) LogStream.WriteLine(now + message);
                 HBSLogger.LogAtLevel(Level, now + " " + Label + " " + e?.Message);
