@@ -49,7 +49,7 @@ namespace IRBTModUtils.Logging
         public void Write(string message)
         {
             dateTime = DateTime.UtcNow;
-            if (Async._bRunning == false)
+            if (Async?._bRunning == false)
             {
                 isSync = true;
                 now = FastFormatDate.ToHHmmssfff_(ref dateTime);
@@ -57,7 +57,7 @@ namespace IRBTModUtils.Logging
             }
             else
             {
-                Async.SendMessageDate(message, dateTime.Ticks, LogStream);
+                Async?.SendMessageDate(message, dateTime.Ticks, LogStream);
             }
             if (HBSLogger != null)
             {
@@ -71,6 +71,22 @@ namespace IRBTModUtils.Logging
             }
         }
 
+        public void WriteStructured(AsyncMessageData Data)
+        {
+            dateTime = DateTime.UtcNow;
+
+            // Async Fallback implementation
+            if (Async?._bRunning == false)
+            {
+                isSync = true;
+                now = FastFormatDate.ToHHmmssfff_(ref dateTime);
+                SendMessageExceptSync(now, null, Data.Format(), LogStream);
+            }
+            else
+            {
+                Async?.SendStructuredMessage(Data, dateTime.Ticks, LogStream);
+            }
+        }
 
         /// <summary>
         /// ModLogWriter write function with exception handling and toggleable synchronous/multithreaded async write
@@ -78,12 +94,10 @@ namespace IRBTModUtils.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(Exception e, string message = null)
         {
-
             dateTime = DateTime.UtcNow;
 
-
             // Async Fallback implementation
-            if (Async._bRunning == false)
+            if (Async?._bRunning == false)
             {
                 isSync = true;
                 now = FastFormatDate.ToHHmmssfff_(ref dateTime);
@@ -91,7 +105,7 @@ namespace IRBTModUtils.Logging
             }
             else
             {
-                Async.SendMessageDateExcept(message, e, dateTime.Ticks, LogStream);
+                Async?.SendMessageDateExcept(message, e, dateTime.Ticks, LogStream);
             }
             if (HBSLogger != null)
             {
@@ -114,10 +128,10 @@ namespace IRBTModUtils.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly void SendMessageSync(string now, string message, StreamWriter LogStream)
         {
-            Async.StartSyncStat();
+            Async?.StartSyncStat();
             LogStream.WriteLine(now + " " + message);
             LogStream.Flush();
-            Async.StopSyncStat();
+            Async?.StopSyncStat();
         }
 
 
@@ -142,7 +156,6 @@ namespace IRBTModUtils.Logging
                     LogStream.WriteLine(now + " " + e?.InnerException.InnerException.StackTrace);
                 }
             }
-
             LogStream.Flush();
         }
     }
