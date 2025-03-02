@@ -180,7 +180,6 @@ namespace IRBTModUtils.Logging
                         buffer[j + HHMMSSFFF_DATE_LEN] = toWrite[j];
                     }
 
-
                     buffer[HHMMSSFFF_DATE_LEN + toWrite.Length] = NEW_LINE[0];
                     if (NEW_LINE_SIZE == 2)
                     {
@@ -239,129 +238,6 @@ namespace IRBTModUtils.Logging
             }
             return processCount;
         }
-
-
-
-        /// <summary>
-        /// Dequeues messages into a thread local buffer and flushes contiguously based on writer
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        long ProcessMessages()
-        {
-            // Note, observation of stats can throw off performance due to overhead/readout. Dispatch times worsened due to attempts to be nicer to the CPU
-            // Original flush implementation preserved to slow producer down for HDD users. Pending Pinvoke based optimization for encoding.
-
-            DateTime curUtc;
-            StreamWriter curWriter = null;
-            int flushCount = 0;
-            long ticks = 0;
-            long bytesWritten = 0;
-            long maxMessageBytes = 0;
-            int truncatedSize = 0;
-            string nowStr = "";
-
-            int processCount = DoubleBuffer();
-
-            // Begin processing messages
-            for (int i = 0; i < processCount; i++)
-            {
-                // On init, make sure to assign writer. Should be null checked prior to buffering
-                if (i == 0) { curWriter = messages[i]._writer; }
-
-                AsyncLogMessage item = messages[i];
-
-                string toWrite = item._message.Format();
-
-                // Cut the tape, and write existing contiguous data
-                if (item._writer != curWriter)
-                {
-                    _asyncStats.StartFlush();
-                    curWriter.Flush();
-                    _asyncStats.StopFlush();
-                    flushCount++;
-                    curWriter = item._writer;
-                }
-
-                _asyncStats.StartWrite();
-
-                // Cache date during message bursts
-                if (ticks != item._ticks)
-                {
-                    curUtc = new DateTime(item._ticks);
-                    ticks = item._ticks;
-                    FastFormatDate.ToHHmmssfff_(ref curUtc, ref buffer);
-                }
-
-                // Truncation Handling
-                truncatedSize = toWrite.Length;
-                if (toWrite.Length > buffer.Length)
-                {
-                    // Truncate and leave space for newline and date str
-                    truncatedSize = buffer.Length - NEW_LINE_SIZE - HHMMSSFFF_DATE_LEN;
-                }
-                for (int j = 0; j < truncatedSize; j++)
-                {
-                    buffer[j + HHMMSSFFF_DATE_LEN] = toWrite[j];
-                }
-
-                // Concat line ending, branching hopefully optimized by JIT. Windows \r\n, Unix: \n
-                // See: https://learn.microsoft.com/en-us/dotnet/api/system.environment.newline?view=netframework-4.7.2
-                buffer[HHMMSSFFF_DATE_LEN + toWrite.Length] = NEW_LINE[0];
-                if (NEW_LINE_SIZE == 2)
-                {
-                    buffer[HHMMSSFFF_DATE_LEN + toWrite.Length + 1] = NEW_LINE[1];
-                }
-                int outputLength = HHMMSSFFF_DATE_LEN + truncatedSize + NEW_LINE_SIZE;
-
-
-                // Output
-                curWriter.Write(buffer, 0, outputLength);
-
-                bytesWritten += outputLength;
-                if (maxMessageBytes < outputLength)
-                {
-                    maxMessageBytes = outputLength;
-                }
-
-                // Exception handling not optimized, dynamically allocate for now and avoid truncation
-                if (item._e != null)
-                {
-                    item._writer.WriteLine(nowStr + item._e?.StackTrace);
-
-                    if (item._e?.InnerException != null)
-                    {
-                        item._writer.WriteLine(nowStr + item._e?.InnerException?.Message);
-                        item._writer.WriteLine(nowStr + item._e?.InnerException?.StackTrace);
-
-                        if (item._e.InnerException?.InnerException != null)
-                        {
-                            item._writer.WriteLine(nowStr + item._e?.InnerException?.InnerException?.Message);
-                            item._writer.WriteLine(nowStr + item._e?.InnerException?.InnerException?.StackTrace);
-                        }
-                    }
-                }
-                _asyncStats.StopWrite();
-
-                // Last item, cut the current tape and flush. Decrement count for indexing
-                if (i == (processCount - 1))
-                {
-                    _asyncStats.StartFlush();
-                    curWriter.Flush();
-                    flushCount++;
-                    _asyncStats.StopFlush();
-                }
-            }
-
-            if (processCount > 0)
-            {
-                var printUtc = DateTime.UtcNow;
-                nowStr = FastFormatDate.ToHHmmssfff_(ref printUtc);
-                _asyncStats.Sample(processCount, maxMessageBytes, bytesWritten, nowStr, _statusLog);
-            }
-
-            return processCount;
-        }
-
 
         // Helper functions for main thread to log their synchronous times. Benchmark non-exception path as most oft used.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -480,19 +356,18 @@ namespace IRBTModUtils.Logging
                 }
                 i++;
             }
+
             SendStatusMessage("AsyncLog [BIST] File Modified");
             bistLogWriter.Close();
             var reader = new StreamReader(_bistLogPath);
             string readBack = reader.ReadToEnd().Remove(0, 14);
 
             if (readBack.Length < 4096) { _statusLog.Write("AsyncLog [BIST] FAIL - READBACK LENGTH"); return; }
-
             var refTime = new DateTime(testDate);
 
             // Readback will fail if the endline is incorrect. This is intentional to check other platforms
             string checkString = FastFormatDate.ToHHmmssfff_(ref refTime) + testString + Environment.NewLine;
             checkString = checkString.Remove(0, 14);
-
             if (checkString.Length < 4096) { _statusLog.Write("AsyncLog [BIST] FAIL - CHECKSTR LENGTH"); return; }
 
             SendStatusMessage("AsyncLog [BIST] Read Back: " + readBack);
@@ -531,7 +406,6 @@ namespace IRBTModUtils.Logging
             var spinner = new SpinWait();
 
             _statusLog.WriteLine($"{now}AsyncLog [RUN] Running Worker");
-
 
             while (_bRunning)
             {
