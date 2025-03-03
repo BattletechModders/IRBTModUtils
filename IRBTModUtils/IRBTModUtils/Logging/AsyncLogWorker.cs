@@ -31,7 +31,7 @@ namespace IRBTModUtils.Logging
         AsyncLogMessage[] messages = new AsyncLogMessage[1024 * 1024];
 
         // Constant
-        private const int FORMAT_BUFFER_START_SIZE = 4096;
+        private const int FORMAT_BUFFER_START_SIZE = 1024*1024;
         private const int HHMMSSFFF_DATE_LEN = 13;
         private const string STATUS_LOG_NAME = "irbt_async.log";
         private const string BIST_LOG_NAME = "irbt_async_bist.log";
@@ -39,7 +39,6 @@ namespace IRBTModUtils.Logging
         private string NEW_LINE = Environment.NewLine;
         char[] nowChars = new char[13];
 
-        // Allocate 512 4KiB memory pages, for a total of 2,097.152 KB
         // Worst case experienced so far was 200 KB.
         public char[] buffer = new char[FORMAT_BUFFER_START_SIZE];
 
