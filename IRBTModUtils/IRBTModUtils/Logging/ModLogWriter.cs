@@ -141,7 +141,12 @@ namespace IRBTModUtils.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly void SendMessageExceptSync(string now, Exception e, string message, StreamWriter LogStream)
         {
-            if (message != null) LogStream.WriteLine(now + " " + message);
+            // Note, this is moved in the asynchronous case to fast path. 
+            if (message != null) { 
+                LogStream.WriteLine(now + " " + message); 
+            }
+
+            // Kept similar in the asynchronous case
             LogStream.WriteLine(now + " " + e?.Message);
             LogStream.WriteLine(now + " " + e?.StackTrace);
 
