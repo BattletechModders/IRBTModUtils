@@ -71,23 +71,6 @@ namespace IRBTModUtils.Logging
             }
         }
 
-        public void WriteStructured(AsyncMessageData Data)
-        {
-            dateTime = DateTime.UtcNow;
-
-            // Async Fallback implementation
-            if (Async?._bRunning == false)
-            {
-                isSync = true;
-                now = FastFormatDate.ToHHmmssfff_(ref dateTime);
-                SendMessageExceptSync(now, null, Data.Format(), LogStream);
-            }
-            else
-            {
-                Async?.SendStructuredMessage(Data, dateTime.Ticks, LogStream);
-            }
-        }
-
         /// <summary>
         /// ModLogWriter write function with exception handling and toggleable synchronous/multithreaded async write
         /// </summary>        
@@ -120,7 +103,24 @@ namespace IRBTModUtils.Logging
                 isSync = false;
             }
         }
-        
+       
+        public void WriteStructured(AsyncMessageData Data)
+        {
+            dateTime = DateTime.UtcNow;
+
+            // Async Fallback implementation
+            if (Async?._bRunning == false)
+            {
+                isSync = true;
+                now = FastFormatDate.ToHHmmssfff_(ref dateTime);
+                SendMessageExceptSync(now, null, Data.Format(), LogStream);
+            }
+            else
+            {
+                Async?.SendStructuredMessage(Data, dateTime.Ticks, LogStream);
+            }
+        }
+
         
         /// <summary>
         /// Existing synchronous implementation of ModLogWriter without exception handling or date formatting

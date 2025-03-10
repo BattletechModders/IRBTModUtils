@@ -93,6 +93,7 @@ namespace IRBTModUtils.Logging
         private long _bytesWritten  = 0;
         private long _maxMessageBytes = 0;
         private long _msgCount = 0;
+        private long _dispatchCount = 0;
         private long _windowCount = 0;
 
         private long _sampleWindow = 1000;
@@ -165,6 +166,7 @@ namespace IRBTModUtils.Logging
             _burstCount = 0;
             _bytesWritten = 0;
             _msgCount = 0;
+            _dispatchCount = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -195,7 +197,7 @@ namespace IRBTModUtils.Logging
         void AppendOverallStats(StringBuilder sb, string prefix = "")
         {
             if (prefix != "") { sb.Append(prefix); }
-            sb.AppendLine($"Message Count: {_msgCount} Burst Count: {_burstCount} Burst Bytes {_maxMessageBytes} Bytes Written: {_bytesWritten}\n");
+            sb.AppendLine($"Message Count: {_msgCount} Dispatch Count: {_dispatchCount} Burst Count: {_burstCount} Burst Bytes {_maxMessageBytes} Bytes Written: {_bytesWritten}\n");
         }
 
 
@@ -243,7 +245,7 @@ namespace IRBTModUtils.Logging
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void StartDispatch() { _dispatchTime.Start(); }
+        public void StartDispatch() { _dispatchTime.Start(); _dispatchCount += 1; }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StopDispatch() { _dispatchTime.Stop(); }
 

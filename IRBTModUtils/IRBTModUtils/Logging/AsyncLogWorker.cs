@@ -25,13 +25,13 @@ namespace IRBTModUtils.Logging
         AsyncLogStatCollection _asyncStats = new AsyncLogStatCollection();
 
         // Buffer memory. Note, relatively small since pointers not data
-        public MPMCQueue queue = new MPMCQueue(1024 * 1024);
+        public MPMCQueue queue = new MPMCQueue(1024*1024);
 
         // Local queue for freeing up concurrent queue during bursting
-        AsyncLogMessage[] messages = new AsyncLogMessage[1024 * 1024];
+        AsyncLogMessage[] messages = new AsyncLogMessage[1024*1024];
 
         // Constant
-        private const int FORMAT_BUFFER_START_SIZE = 1024*1024;
+        private const int FORMAT_BUFFER_START_SIZE = 1024 * 1024;
         private const int HHMMSSFFF_DATE_LEN = 13;
         private const string STATUS_LOG_NAME = "irbt_async.log";
         private const string BIST_LOG_NAME = "irbt_async_bist.log";
@@ -254,6 +254,8 @@ namespace IRBTModUtils.Logging
         public void SendMessageDateExcept(string message, Exception e, long dateTimeTicks, StreamWriter writer)
         {
             _asyncStats.StartDispatch();
+            // Note compound assignment for null check. Ensures construction when reference passed to asynchronous thread
+            message ??= "";
             var Message = new AsyncLogMessage(message, e, dateTimeTicks, writer);
             queue.TryEnqueue(Message);
             _asyncStats.StopDispatch();
@@ -264,6 +266,7 @@ namespace IRBTModUtils.Logging
         public void SendMessageDate(string message, long dateTimeTicks, StreamWriter writer)
         {
             _asyncStats.StartDispatch();
+            message ??= "";
             var Message = new AsyncLogMessage(message, null, dateTimeTicks, writer);
             queue.TryEnqueue(Message);
             _asyncStats.StopDispatch();
@@ -282,6 +285,7 @@ namespace IRBTModUtils.Logging
         public void SendMessage(string message, StreamWriter writer)
         {
             _asyncStats.StartDispatch();
+            message ??= "";
             var Message = new AsyncLogMessage(message, null, DateTime.UtcNow.Ticks, writer);
             queue.TryEnqueue(Message);
             _asyncStats.StopDispatch();
@@ -291,6 +295,7 @@ namespace IRBTModUtils.Logging
         public void SendMessageException(string message, Exception e, StreamWriter writer)
         {
             _asyncStats.StartDispatch();
+            message ??= "";
             var Message = new AsyncLogMessage(message, e, DateTime.UtcNow.Ticks, writer);
             queue.TryEnqueue(Message);
             _asyncStats.StopDispatch();
@@ -310,6 +315,24 @@ namespace IRBTModUtils.Logging
             thread.Priority = ThreadPriority.Normal;
             thread.Start();
             _bRunning = true;
+        }
+
+        void BISTSimulateException()
+        {
+            try
+            {
+                throw new AsyncExceptionTest();
+            }
+            catch (AsyncExceptionTest e)
+            {
+                SendMessageException("Test Exception", e, _statusLog);
+            }
+            catch (Exception e)
+            {
+
+                SendMessageException("Test Exception", e, _statusLog);
+                // General exception handling logic
+            }
         }
 
         void BIST()
