@@ -165,7 +165,6 @@ namespace IRBTModUtils.Logging
                         curUtc = new DateTime(item._ticks);
                         ticks = item._ticks;
 
-                        //nowStr = FastFormatDate.ToHHmmssfff_(ref curUtc);
                         FastFormatDate.ToHHmmssfff_(ref curUtc, ref buffer);
                     }
                     if (length >= buffer.Length)
@@ -203,6 +202,7 @@ namespace IRBTModUtils.Logging
                     // Exception handling not optimized, dynamically allocate for now and avoid truncation
                     if (item._e != null)
                     {
+                        item._writer.WriteLine(nowStr + item._e?.Message);
                         item._writer.WriteLine(nowStr + item._e?.StackTrace);
 
                         if (item._e?.InnerException != null)
