@@ -1,5 +1,4 @@
-﻿using HBS.Logging;
-using System;
+﻿using System;
 using System.IO;
 
 namespace IRBTModUtils.Logging
@@ -16,6 +15,7 @@ namespace IRBTModUtils.Logging
 
         public readonly bool IsDebug;
         public readonly bool IsTrace;
+        public readonly bool IsNoOp;
 
         readonly ModLogWriter ModOnlyWriter;
         readonly ModLogWriter CombinedWriter;
@@ -26,41 +26,67 @@ namespace IRBTModUtils.Logging
 
         public DeferringLogger(string modDir, string logFilename = "mod", string logLabel = "mod", bool isDebug = false, bool isTrace = false)
         {
-            if (LogFile == null)
-            {
-                LogFile = Path.Combine(modDir, $"{logFilename}.log");
-            }
-
-            if (File.Exists(LogFile))
-            {
-                File.Delete(LogFile);
-            }
-
-            LogStream = File.AppendText(LogFile);
-            LogLabel = "<" + logLabel + ">";
-
             IsDebug = isDebug;
             IsTrace = isTrace;
 
-            ModOnlyWriter = new ModLogWriter(LogStream, null);
-            CombinedWriter = new ModLogWriter(LogStream, LogLabel);
+            if (modDir != null && modDir.Length > 0)
+            {
+                if (LogFile == null)
+                {
+                    LogFile = Path.Combine(modDir, $"{logFilename}.log");
+                }
+
+                if (File.Exists(LogFile))
+                {
+                    File.Delete(LogFile);
+                }
+
+                LogStream = File.AppendText(LogFile);
+                LogLabel = "<" + logLabel + ">";
+
+                ModOnlyWriter = new ModLogWriter(LogStream, null);
+                CombinedWriter = new ModLogWriter(LogStream, LogLabel);
+
+                IsNoOp = false;
+            }
+            else
+            {
+                Console.WriteLine("Unable to configure logger for writing, all messages will be dropped.");
+                ModOnlyWriter = new ModLogWriter(null, null);
+                CombinedWriter = new ModLogWriter(null, null);
+
+                IsNoOp = true;
+            }
+
+
         }
 
         public Nullable<ModLogWriter> Trace
         {
-            get { return IsTrace ? (Nullable<ModLogWriter>)ModOnlyWriter : null; }
+            get 
+            {
+                if (IsNoOp) return null;
+                return IsTrace ? (Nullable<ModLogWriter>)ModOnlyWriter : null; 
+            }
             private set { }
         }
 
         public Nullable<ModLogWriter> Debug
         {
-            get { return IsDebug ? (Nullable<ModLogWriter>)ModOnlyWriter : null; }
+            get 
+            {
+                if (IsNoOp) return null;
+                return IsDebug ? (Nullable<ModLogWriter>)ModOnlyWriter : null; 
+            }
             private set { }
         }
 
         public Nullable<ModLogWriter> Info
         {
-            get { return (Nullable<ModLogWriter>)ModOnlyWriter; }
+            get 
+            {
+                return IsNoOp ? null : (Nullable<ModLogWriter>)ModOnlyWriter;
+            }
             private set { }
         }
 
@@ -68,8 +94,12 @@ namespace IRBTModUtils.Logging
         {
             get 
             {
-                if (CombinedWriter.HBSLogger.IsWarningEnabled) return CombinedWriter;
-                else return (Nullable<ModLogWriter>)ModOnlyWriter;
+                if (IsNoOp) return null;
+                else
+                {
+                    if (CombinedWriter.HBSLogger.IsWarningEnabled) return CombinedWriter;
+                    else return (Nullable<ModLogWriter>)ModOnlyWriter;
+                }
             }
             private set { }
         }
@@ -78,8 +108,12 @@ namespace IRBTModUtils.Logging
         {
             get
             {
-                if (CombinedWriter.HBSLogger.IsErrorEnabled) return CombinedWriter;
-                else return (Nullable<ModLogWriter>)ModOnlyWriter;
+                if (IsNoOp) return null;
+                else
+                {
+                    if (CombinedWriter.HBSLogger.IsWarningEnabled) return CombinedWriter;
+                    else return (Nullable<ModLogWriter>)ModOnlyWriter;
+                }
             }
             private set { }
         }
