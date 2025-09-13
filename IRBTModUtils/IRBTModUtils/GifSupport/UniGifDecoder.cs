@@ -393,7 +393,7 @@ namespace IRBTModUtils {
     /// <param name="clearCode">out Clear code</param>
     /// <param name="finishCode">out Finish code</param>
     private static void InitDictionary(Dictionary<int, string> dic, int lzwMinimumCodeSize, out int lzwCodeSize, out int clearCode, out int finishCode) {
-      int dicLength = (int)Math.Pow(2, lzwMinimumCodeSize);
+      int dicLength = (int)System.Math.Pow(2, lzwMinimumCodeSize);
 
       clearCode = dicLength;
       finishCode = clearCode + 1;

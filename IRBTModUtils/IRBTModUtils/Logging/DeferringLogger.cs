@@ -58,6 +58,9 @@ namespace IRBTModUtils.Logging
                 IsNoOp = true;
             }
 
+            LogStream = new StreamWriter(LogFile, true, new System.Text.UTF8Encoding(false), 65535);
+
+            LogLabel = "<" + logLabel + ">";
 
         }
 
@@ -92,7 +95,7 @@ namespace IRBTModUtils.Logging
 
         public Nullable<ModLogWriter> Warn
         {
-            get 
+            get
             {
                 if (IsNoOp) return null;
                 else
@@ -118,6 +121,6 @@ namespace IRBTModUtils.Logging
             private set { }
         }
     }
-    
+
 }
 

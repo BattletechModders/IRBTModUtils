@@ -1,4 +1,4 @@
-﻿using BattleTech;
+﻿
 using IRBTModUtils;
 using System;
 using System.Collections.Generic;

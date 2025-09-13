@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Security;
 using System.Text;
 using us.frostraptor.modUtils;
+using System;
+using HBS;
 
 namespace IRBTModUtils
 {
@@ -51,11 +55,15 @@ namespace IRBTModUtils
         public SkillModConfig Tactics = new SkillModConfig();
     }
 
+
     public class ModConfig
     {
 
         public bool Debug = true;
         public bool Trace = false;
+
+        public bool AsyncLogging = false;
+        public bool SimulateAsyncBISTFail = false;
 
         public FeatureState Features = new FeatureState();
 
@@ -68,11 +76,19 @@ namespace IRBTModUtils
         public SkillToModsConfig SkillsToModifiers = new SkillToModsConfig();
         public List<string> BlockedDlls = new List<string>();
 
+
+
         public void LogConfig()
         {
             Mod.Log.Info?.Write("=== MOD CONFIG BEGIN ===");
             Mod.Log.Info?.Write($"  DEBUG: {this.Debug} Trace: {this.Trace}");
             Mod.Log.Info?.Write("");
+ 
+            
+            Mod.Log.Info?.Write("--- LOGGING ---");
+            Mod.Log.Info?.Write($"  Asynchronous Logging: {this.AsyncLogging}");
+            Mod.Log.Info?.Write("");  
+
 
             Mod.Log.Info?.Write("--- FEATURES ---");
             Mod.Log.Info?.Write($"  EnableMovementModifiers: {this.Features.EnableMovementModifiers}");
@@ -86,6 +102,7 @@ namespace IRBTModUtils
             Mod.Log.Info?.Write($"  CallsignPath: {this.Dialogue.CallsignsPath}");
             Mod.Log.Info?.Write($"  Portraits: {string.Join(",", this.Dialogue.Portraits)}");
             Mod.Log.Info?.Write("");
+
 
             Mod.Log.Info?.Write("--- SKILL MODIFIERS ---");
             StringBuilder ratToModSB = new StringBuilder();

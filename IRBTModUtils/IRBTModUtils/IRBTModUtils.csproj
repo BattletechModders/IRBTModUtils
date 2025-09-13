@@ -25,6 +25,7 @@
     <DebugType>none</DebugType>
     <AssemblyTitle>IRBTModUtils</AssemblyTitle>
     <Product>IRBTModUtils</Product>
+
     <Copyright>Copyright © 2023</Copyright>
     <AssemblyVersion>2.1.0</AssemblyVersion>
     <FileVersion>2.1.0</FileVersion>
@@ -65,14 +66,12 @@
     <Reference Include="Newtonsoft.Json">
       <Private>False</Private>
     </Reference>
-    
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Core">
       <Private>False</Private>
     </Reference>
-    
     <Reference Include="Unity.TextMeshPro">
       <Private>False</Private>
     </Reference>
